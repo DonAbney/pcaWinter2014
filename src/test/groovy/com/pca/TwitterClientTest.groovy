@@ -1,7 +1,7 @@
 package com.pca
 
 
-class TweetTest extends GroovyTestCase {
+class TwitterClientTest extends GroovyTestCase {
 
     public void test_filtersTweetsByHashTag() {
         List tweets = [[hashTags: ["filtered"], tweet: "tweet 1"],
