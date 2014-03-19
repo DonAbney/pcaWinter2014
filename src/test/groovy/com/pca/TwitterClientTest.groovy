@@ -18,4 +18,12 @@ class TwitterClientTest extends GroovyTestCase {
         TwitterClient client = new TwitterClient(tweets:  tweets);
         assertEquals([tweets[0], tweets[2]], client.filterByHashTag("filtered"))
     }
+
+    public void test_filterByTweetText_returnsList()
+    {
+        TwitterClient client = new TwitterClient();
+
+        def tweets = client.getTweetsFilterByTweetText("");
+        assertTrue(tweets instanceof List);
+    }
 }

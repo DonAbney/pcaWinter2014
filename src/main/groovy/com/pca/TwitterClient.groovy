@@ -9,4 +9,9 @@ class TwitterClient {
 
         tweets.findAll{tweet->tweet.hashTags.contains(hashTag)}
     }
+
+    def List<List<Map>> getTweetsFilterByTweetText(String textFilter)
+    {
+        []
+    }
 }
