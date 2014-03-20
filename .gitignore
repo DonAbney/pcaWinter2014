@@ -3,3 +3,11 @@ out
 .idea/
 *.iml
 *.swp
+
+#OSX
+.DS_Store
+
+#Emacs
+*~
+\#*\#
+.\#*
