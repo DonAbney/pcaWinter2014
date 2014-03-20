@@ -7,3 +7,10 @@ gradle/
 classes/
 gradlew
 gradlew.bat
+#OSX
+.DS_Store
+
+#Emacs
+*~
+\#*\#
+.\#*
