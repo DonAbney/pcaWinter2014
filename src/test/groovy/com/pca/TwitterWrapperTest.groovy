@@ -2,7 +2,6 @@ package com.pca
 
 class TwitterWrapperTest extends GroovyTestCase {
 
-
     TwitterWrapper getWrapper() {
         TwitterWrapper wrapper = new TwitterWrapper()
         wrapper
@@ -48,5 +47,4 @@ class TwitterWrapperTest extends GroovyTestCase {
     void testNoBlankTweets() {
         assert getTweets().every { tweet -> tweet.tweet.size() > 0 }
     }
-
 }
