@@ -16,16 +16,12 @@ class TwitterWrapperTest extends GroovyTestCase {
     }
 
     void testReturnsIterableOfMaps() {
-        getTweets().each { tweet -> assert tweet instanceof Map }
+        assert getTweets().every { tweet -> tweet instanceof Map }
     }
 
     void testReturnsIterableOfMapsWithExpectedKeys() {
-        def expectedKeys = ['hashtags', 'user', 'tweet'] as Set;
+        def expectedKeys = ['user', 'tweet'] as Set;
         assert getTweets().every { tweet -> expectedKeys == tweet.keySet() }
-    }
-
-    void testHashTagsAsList() {
-        assert getTweets().every { tweet -> tweet.hashtags instanceof List }
     }
 
     void testUserAsString() {
@@ -34,10 +30,6 @@ class TwitterWrapperTest extends GroovyTestCase {
 
     void testTweetAsString() {
         assert getTweets().every { tweet -> tweet.tweet instanceof String }
-    }
-
-    void testEveryHashTagBeginsWithPoundSign() {
-        assert getTweets().every { tweet -> tweet.hashtags.every { it.startsWith('#') }}
     }
 
     void testNoBlankUsers() {

@@ -5,9 +5,9 @@ class TwitterWrapper {
     
     List getTweets() {
         [
-            [hashtags:['#foo', '#bar'], user:'aUserName', tweet:'a tweet',],
-            [hashtags:['#baz'], user:'anotherUser', tweet:'a longer tweet',],
-            [hashtags:[], user:'aUserName', tweet:'tweet',],
+            [user:'aUserName', tweet:'a tweet with a tag #fun',],
+            [user:'anotherUser', tweet:'a #silly tweet',],
+            [user:'aUserName', tweet:'a boring tweet',],
         ]
 
     }
