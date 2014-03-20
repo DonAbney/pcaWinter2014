@@ -9,4 +9,6 @@ class TwitterWrapperTest extends GroovyTestCase {
         String actualResult = twitterWrapper.echoMyString(myString)
         assertEquals("Did not return the same string", myString, actualResult)
     }
+
+    // what the heck is this testing !!! BAD BAD BAD !
 }
