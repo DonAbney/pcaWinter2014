@@ -4,3 +4,6 @@ out
 *.iml
 *.swp
 gradle/
+classes/
+gradlew
+gradlew.bat
