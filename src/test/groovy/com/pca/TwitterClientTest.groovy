@@ -18,6 +18,19 @@ class TwitterClientTest extends GroovyTestCase {
         }
     }
 
+    public void test_getLatestTweets() {
+        List tweets = [[user: 'jason', tweet: 'hey everyone'], [user: 'jason', tweet: 'yo']]
+        TwitterWrapper wrapper = new TwitterWrapper() {
+            @Override
+            List getTweets() {
+                return tweets
+            }
+        }
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper)
+        assert tweets == client.getTweets()
+    }
+
+
     public void test_RetrieveTweets_GivenAHashTagItRetrievesTweetsWithThatHashTag() {
         TwitterClient twitterClient = new TwitterClient(twitterWrapper: wrapper)
         assertEquals([tweets[0], tweets[2]], twitterClient.retrieveTweets("#include"))
@@ -27,6 +40,11 @@ class TwitterClientTest extends GroovyTestCase {
     public void test_RetrieveTweets_givenNoHashTagItRetrievesAllTweets() {
         TwitterClient twitterClient = new TwitterClient(twitterWrapper: wrapper)
         assertEquals(tweets, twitterClient.retrieveTweets())
+    }
+
+    public void test_RetrieveTweets_givenUnusedHashTagItRetrievesAllTweets() {
+        TwitterClient twitterClient = new TwitterClient(twitterWrapper: wrapper)
+        assertEquals([], twitterClient.retrieveTweets('#unused'))
     }
 
     public void test_RetrieveTweets_givenPlainTextItRetrievesAllTweets() {

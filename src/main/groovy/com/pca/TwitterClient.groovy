@@ -4,15 +4,13 @@ package com.pca
 class TwitterClient {
 
     def twitterWrapper
-    List tweets
 
-    def retrieveTweets(def hashTag) {
-        this.tweets = twitterWrapper.getTweets()
-        filterByHashTag(hashTag)
+    def List getTweets() {
+        this.twitterWrapper.getTweets()
     }
 
-    private def filterByHashTag(def hashTag) {
-        isHashTag(hashTag) ? tweets.findAll { tweet -> tweet.tweet.contains(hashTag) } : tweets
+    def retrieveTweets(def hashTag) {
+        isHashTag(hashTag) ? twitterWrapper.getTweets().findAll { tweet -> tweet.tweet.contains(hashTag) } : tweets
     }
 
     private def isHashTag(hashTag) {
