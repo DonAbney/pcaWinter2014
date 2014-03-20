@@ -3,6 +3,18 @@ package com.pca
 
 class TwitterClientTest extends GroovyTestCase {
 
+    public void test_getLatestTweets() {
+        List tweets = [[user: 'jason', tweet: 'hey everyone'], [user: 'jason', tweet: 'yo']]
+        TwitterWrapper wrapper = new TwitterWrapper() {
+            @Override
+            List getTweets() {
+                return tweets
+            }
+        }
+        TwitterClient client = new TwitterClient(wrapper: wrapper)
+        assert tweets == client.getTweets()
+    }
+
     public void test_filtersTweetsByHashTag() {
         List tweets = [[hashTags: ["filtered"], tweet: "tweet 1"],
                 [hashTags: ["notFiltered"], tweet: "tweet 2"]]

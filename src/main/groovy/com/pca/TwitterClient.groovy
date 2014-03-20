@@ -3,7 +3,12 @@ package com.pca
 
 class TwitterClient {
 
-    List tweets;
+    private TwitterWrapper wrapper
+    private List tweets
+
+    def List getTweets() {
+        this.wrapper.getTweets()
+    }
 
     def filterByHashTag(def hashTag) {
 
