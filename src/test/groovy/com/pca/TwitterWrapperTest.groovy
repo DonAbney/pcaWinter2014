@@ -7,6 +7,6 @@ class TwitterWrapperTest extends GroovyTestCase {
         String myString = "Hello PCA"
         TwitterWrapper twitterWrapper = new TwitterWrapper()
         String actualResult = twitterWrapper.echoMyString(myString)
-        assertEquals("Did not return the same string", myString,actualResult)
+        assertEquals("Did not return the same string", myString, actualResult)
     }
 }
