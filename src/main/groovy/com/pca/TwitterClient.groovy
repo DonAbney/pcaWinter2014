@@ -3,7 +3,7 @@ package com.pca
 
 class TwitterClient {
 
-    TwitterWrapper twitterWrapper = new TwitterWrapper();
+    TwitterWrapper twitterWrapper
 
     List getTweets(def hashTag) {
         List allTweets = twitterWrapper.getTweets()
@@ -18,4 +18,6 @@ class TwitterClient {
     private def isHashTag(hashTag) {
         hashTag?.startsWith('#')
     }
+
+
 }
