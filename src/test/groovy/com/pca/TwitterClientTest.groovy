@@ -53,7 +53,7 @@ class TwitterClientTest extends GroovyTestCase {
         assertEquals(allTweets, twitterClient.getTweets())
     }
 
-    public void test_getTweets_givenUnusedHashTagItRetrievesAllTweets() {
+    public void test_getTweets_givenUnusedHashTagItRetrievesNoTweets() {
         TwitterClient twitterClient = new TwitterClient(twitterWrapper: wrapper)
         assertEquals([], twitterClient.getTweets('#unused'))
     }
