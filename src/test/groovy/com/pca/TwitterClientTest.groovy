@@ -3,19 +3,21 @@ package com.pca
 
 class TwitterClientTest extends GroovyTestCase {
 
-    private List tweets;
-    private def wrapper;
+    private List allTweets;
+    private TwitterWrapper wrapper;
 
     public void setUp() {
-        tweets = [[tweet: "tweet 1 #include #monkey"],
+        allTweets = [[tweet: "tweet 1 #include #monkey"],
                 [tweet: "tweet 2"],
                 [tweet: "another tweet #include"]]
-        wrapper = new Expando()
-        wrapper.invoked = false
-        wrapper.getTweets = {
-            wrapper.invoked = true;
-            tweets
+        wrapper = new TwitterWrapper() {
+            @Override
+            List getTweets() {
+                allTweets
+            }
+
         }
+
     }
 
     public void test_getLatestTweets() {
@@ -31,25 +33,24 @@ class TwitterClientTest extends GroovyTestCase {
     }
 
 
-    public void test_RetrieveTweets_GivenAHashTagItRetrievesTweetsWithThatHashTag() {
+    public void test_getTweets_GivenAHashTagItRetrievesTweetsWithThatHashTag() {
         TwitterClient twitterClient = new TwitterClient(twitterWrapper: wrapper)
-        assertEquals([tweets[0], tweets[2]], twitterClient.retrieveTweets("#include"))
-        assertTrue(wrapper.invoked)
+        assertEquals([allTweets[0], allTweets[2]], twitterClient.getTweets("#include"))
     }
 
-    public void test_RetrieveTweets_givenNoHashTagItRetrievesAllTweets() {
+    public void test_getTweets_givenNoHashTagItRetrievesAllTweets() {
         TwitterClient twitterClient = new TwitterClient(twitterWrapper: wrapper)
-        assertEquals(tweets, twitterClient.retrieveTweets())
+        assertEquals(allTweets, twitterClient.getTweets())
     }
 
-    public void test_RetrieveTweets_givenUnusedHashTagItRetrievesAllTweets() {
+    public void test_getTweets_givenUnusedHashTagItRetrievesAllTweets() {
         TwitterClient twitterClient = new TwitterClient(twitterWrapper: wrapper)
-        assertEquals([], twitterClient.retrieveTweets('#unused'))
+        assertEquals([], twitterClient.getTweets('#unused'))
     }
 
-    public void test_RetrieveTweets_givenPlainTextItRetrievesAllTweets() {
+    public void test_getTweets_givenPlainTextItRetrievesAllTweets() {
         TwitterClient twitterClient = new TwitterClient(twitterWrapper: wrapper)
-        assertEquals(tweets, twitterClient.retrieveTweets("include"))
+        assertEquals(allTweets, twitterClient.getTweets("include"))
     }
 
 }
