@@ -1,7 +1,12 @@
 package com.pca
 
+import org.junit.Test
 
 class TwitterClientTest extends GroovyTestCase {
+
+    final List tweets1 = [[user:'aUserName', tweet:'no hash tags yo!!'],
+            [user:'anotherUser', tweet:'a #silly tweet'],
+            [user:'aUserName', tweet:'a boring tweet'] ]
 
     public void test_filtersTweetsByHashTag() {
         List tweets = [[hashTags: ["filtered"], tweet: "tweet 1"],
@@ -41,5 +46,45 @@ class TwitterClientTest extends GroovyTestCase {
 
         def tweets = client.getTweetsFilterByTweetText("");
         assertTrue(tweets instanceof List);
+    }
+
+
+    public void test_filterByTweetText_ReturnsEmptyListWhenFilterTermIsNull()
+    {
+        TwitterClient client = new TwitterClient();
+
+        def tweets = client.getTweetsFilterByTweetText(null);
+        assertEquals(tweets.size(), 0);
+    }
+
+    public void test_filterByTweetText_returnsEmptyList()
+    {
+        TwitterClient client = new TwitterClient();
+
+        def tweets = client.getTweetsFilterByTweetText("");
+        assertEquals(tweets.size(), 0);
+    }
+
+    public void test_filterByTweetText_returnsSomethingWhenExpected()
+    {
+        TwitterClient client = new TwitterClient(tweets:  tweets1);
+
+        def tweets = client.getTweetsFilterByTweetText("tweet");
+        assertTrue(tweets.size() >= 1);
+    }
+
+    public void test_filterByTweetText_returnsCorrectTweets()
+    {
+        TwitterClient client = new TwitterClient(tweets:  tweets1);
+
+        def tweets = client.getTweetsFilterByTweetText("tweet");
+        assertTrue(tweets.size() == 2);
+        assertTrue(tweets.any{tweet -> tweet.tweet == 'a #silly tweet'});
+        assertTrue(tweets.any{tweet -> tweet.tweet == 'a boring tweet'});
+    }
+
+    public void test_getTweets_givenPlainTextItRetrievesAllTweets() {
+        TwitterClient twitterClient = new TwitterClient(twitterWrapper: wrapper)
+        assertEquals(allTweets, twitterClient.getTweets("include"))
     }
 }

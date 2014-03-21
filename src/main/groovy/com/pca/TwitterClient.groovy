@@ -3,15 +3,19 @@ package com.pca
 
 class TwitterClient {
 
-    List tweets;
+    TwitterWrapper twitterWrapper = new TwitterWrapper();
 
-    def filterByHashTag(def hashTag) {
-
-        tweets.findAll{tweet->tweet.hashTags.contains(hashTag)}
+    List getTweets(def hashTag) {
+        List allTweets = twitterWrapper.getTweets()
+        isHashTag(hashTag) ? allTweets.findAll { tweet -> tweet.tweet.contains(hashTag) } : allTweets
     }
 
     def List<List<Map>> getTweetsFilterByTweetText(String textFilter)
     {
-        []
+        twitterWrapper.getTweets().findAll{tweet->tweet.tweet.contains(textFilter)};
+    }
+
+    private def isHashTag(hashTag) {
+        hashTag?.startsWith('#')
     }
 }
