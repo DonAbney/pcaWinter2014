@@ -2,7 +2,7 @@ package com.pca
 
 class WhiteListTest extends GroovyTestCase
 {
-    WhiteList whiteList  // white list used by tests
+    WhiteList whiteList
 
 
     void setUp()
@@ -17,7 +17,7 @@ class WhiteListTest extends GroovyTestCase
 
     void testCaseInsensitiveSearch()
     {
-        assert(whiteList.isHandleInList("jASON"))
+        assertTrue(whiteList.isHandleInList("jASON"))
     }
 
     void testHandleNotInList()
