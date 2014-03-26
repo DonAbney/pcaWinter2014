@@ -8,18 +8,15 @@ class TweetTest extends GroovyTestCase {
                 text: "This is what I tweeted. #PCA #YOLO",
                 hashtags: ["PCA", "YOLO"])
         assertNotNull(tweet)
+        assertTrue(tweet.hashtags instanceof List)
+        assertEquals(2, tweet.hashtags.size())
+        assertEquals("PCA", tweet.hashtags[0])
+        assertEquals("YOLO", tweet.hashtags[1])
     }
 
     void testThrowsAnExceptionWhenConstructorHasTheWrongTypeForId() {
-
         shouldFail(GroovyCastException.class, {
             new Tweet(id: "five")
         })
-    }
-
-    void testCreateTweetWithSingleStringHashtag() {
-        def tweet = new Tweet(id: 7, handle: "aaronmalone",
-                text: "I #yolo'd", hashtags: "yolo")
-        assertEquals("yolo", tweet.hashtags[0])
     }
 }

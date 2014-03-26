@@ -8,8 +8,4 @@ class Tweet {
     String text
     List hashtags
 
-    def setHashtags(String hashtag) {
-        this.hashtags = [hashtag]
-    }
-
 }
