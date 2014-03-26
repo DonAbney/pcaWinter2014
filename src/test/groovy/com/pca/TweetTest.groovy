@@ -11,12 +11,10 @@ class TweetTest extends GroovyTestCase {
     }
 
     void testThrowsAnExceptionWhenConstructorHasTheWrongTypeForId() {
-        try {
+
+        shouldFail(GroovyCastException.class, {
             new Tweet(id: "five")
-            fail('should have thrown a GroovyCastException')
-        } catch(GroovyCastException e) {
-            //expected
-        }
+        })
     }
 
     void testCreateTweetWithSingleStringHashtag() {
