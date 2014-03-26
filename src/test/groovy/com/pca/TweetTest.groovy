@@ -28,4 +28,10 @@ class TweetTest extends GroovyTestCase {
             new Tweet(id: "five")
         })
     }
+
+    void testThrowsAnExceptionWhenHashtagIsSetWithAString() {
+        shouldFail(GroovyCastException.class, {
+            new Tweet(hashtags: "invalid")
+        })
+    }
 }
