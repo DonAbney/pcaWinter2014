@@ -1,93 +1,101 @@
 package com.pca
 
-import org.junit.Test
-
 class TwitterClientTest extends GroovyTestCase {
 
-    private List allTweets;
-    private TwitterWrapper wrapper;
-    private TwitterWrapper wrapper_forTweetText;
+    public void test_getTweets_ReturnsAllTweets() {
+        def tweets = [new Tweet(id: 1, handle: 'jason', text: 'hey everyone'),
+                new Tweet(id: 2, handle: 'jason', text: 'yo'),
+                new Tweet(id: 3, handle: 'sleepy', text: 'look, I got a #hashtag', hashtags: ['hashtag'])]
 
-    public void setUp() {
-        allTweets = [[tweet: "tweet 1 #include #monkey"],
-                [tweet: "tweet 2"],
-                [tweet: "another tweet #include"]]
-        wrapper = new TwitterWrapper() {
-            @Override
-            List getTweets() {
-                allTweets
-            }
-
-        }
-
-        wrapper_forTweetText = new TwitterWrapper() {
-            @Override
-            List getTweets() {
-                [[user:'aUserName', tweet:'no hash tags yo!!'],
-                        [user:'anotherUser', tweet:'a #silly tweet'],
-                        [user:'aUserName', tweet:'a boring tweet'] ]
-            }
-        }
+        TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper)
+        assertEquals(tweets, client.getTweets())
     }
 
-    public void test_getLatestTweets() {
-        List tweets = [[user: 'jason', tweet: 'hey everyone'], [user: 'jason', tweet: 'yo']]
-        TwitterWrapper wrapper = new TwitterWrapper() {
+    public void test_filterByTweetText_returnsAllTweetsWhenFilterIsEmptyString() {
+        def tweets = [new Tweet(id: 1, handle: 'aUserName', text: 'no hash tags yo!!'),
+                new Tweet(id: 2, handle: 'anotherUser', text: 'a #silly tweet', hashtags: ['silly']),
+                new Tweet(id: 3, handle: 'aUserName', text: 'a boring tweet')]
+
+        TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper);
+        assertEquals(tweets, client.getTweetsFilterByTweetText(''));
+    }
+
+    public void test_getTweetsFilterByTweetText_ReturnsAllTweetsWithNullFilter() {
+        def tweets = [new Tweet(id: 1, handle: 'aUserName', text: 'no hash tags yo!!'),
+                new Tweet(id: 2, handle: 'anotherUser', text: 'a #silly tweet', hashtags: ['silly']),
+                new Tweet(id: 3, handle: 'aUserName', text: 'a boring tweet')]
+
+        TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper);
+        assertEquals(tweets, client.getTweetsFilterByTweetText())
+    }
+
+    public void test_getTweetsFilterByTweetText_ReturnsCorrectTweets() {
+        def tweets = [new Tweet(id: 1, handle: 'aUserName', text: 'no hash tags yo!!'),
+                new Tweet(id: 2, handle: 'anotherUser', text: 'a #silly tweet', hashtags: ['silly']),
+                new Tweet(id: 3, handle: 'aUserName', text: 'a boring tweet')]
+
+        TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper);
+        def retrievedTweets = client.getTweetsFilterByTweetText('tweet');
+        assertTrue(retrievedTweets.size() == 2);
+        assertEquals(tweets[1], retrievedTweets[0])
+        assertEquals(tweets[2], retrievedTweets[1])
+    }
+
+    public void test_getTweetsContainingHashTags_ReturnsTweetsContainingPassedInHashTag() {
+        def tweets = [new Tweet (id: 1, handle: 'someHandle', text: 'tweet 1 #include #monkey', hashtags: ['monkey', 'include'] ),
+                new Tweet (id: 2, handle: 'anotherHandle', text: 'tweet 2' ),
+                new Tweet (id: 3, handle: 'someHandle', text: 'another tweet #include', hashtags: ['include'] ),
+                new Tweet (id: 4, handle: 'lastHandle', text: 'tweet without include hashtag' )]
+
+        TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper)
+        assertEquals([tweets[0], tweets[2]], client.getTweetsContainingHashTags(['include']))
+    }
+
+    public void test_getTweetsContainingHashTags_ReturnsAllTweetsWithNoFilter() {
+        def tweets = [new Tweet (id: 1, handle: 'someHandle', text: 'tweet 1 #include #monkey', hashtags: ['monkey', 'include'] ),
+                new Tweet (id: 2, handle: 'anotherHandle', text: 'tweet 2' ),
+                new Tweet (id: 3, handle: 'someHandle', text: 'another tweet #include', hashtags: ['include'] ),
+                new Tweet (id: 4, handle: 'lastHandle', text: 'tweet without include hashtag' )]
+
+        TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper)
+        assertEquals(tweets, client.getTweetsContainingHashTags())
+    }
+
+    public void test_getTweetsContainingHashTags_ReturnsNoTweetsPassingInUnusedHashTag() {
+        def tweets = [new Tweet (id: 1, handle: 'someHandle', text: 'tweet 1 #include #monkey', hashtags: ['monkey', 'include'] ),
+                new Tweet (id: 2, handle: 'anotherHandle', text: 'tweet 2' ),
+                new Tweet (id: 3, handle: 'someHandle', text: 'another tweet #include', hashtags: ['include'] ),
+                new Tweet (id: 4, handle: 'lastHandle', text: 'tweet without include hashtag' )]
+
+        TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper)
+        assertEquals([], client.getTweetsContainingHashTags(['unused']))
+    }
+
+    public void test_getTweetsContainingHashTags_ReturnsProperTweetsGivenMultipleHashTags() {
+        def tweets = [new Tweet (id: 1, handle: 'someHandle', text: 'tweet 1 #include #monkey', hashtags: ['monkey', 'include'] ),
+                new Tweet (id: 2, handle: 'anotherHandle', text: 'tweet 2' ),
+                new Tweet (id: 3, handle: 'someHandle', text: 'another tweet #include', hashtags: ['include'] ),
+                new Tweet (id: 4, handle: 'lastHandle', text: 'tweet me #monkey', hashtags: ['monkey'] ),
+                new Tweet (id: 5, handle: 'sleepy', text: 'I am so #tired', hashtags: ['tired'] ) ]
+
+        TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper)
+        assertEquals([tweets[0], tweets[2], tweets[3]], client.getTweetsContainingHashTags(['include', 'monkey']))
+    }
+
+    private TwitterWrapper getOverwrittenTwitterWrapper(List tweets) {
+        new TwitterWrapper() {
             @Override
             List getTweets() {
                 return tweets
             }
         }
-        TwitterClient client = new TwitterClient(twitterWrapper: wrapper)
-        assert tweets == client.getTweets()
     }
-
-
-    public void test_getTweets_GivenAHashTagItRetrievesTweetsWithThatHashTag() {
-        TwitterClient twitterClient = new TwitterClient(twitterWrapper: wrapper)
-        assertEquals([allTweets[0], allTweets[2]], twitterClient.getTweets("#include"))
-    }
-
-    public void test_getTweets_givenNoHashTagItRetrievesAllTweets() {
-        TwitterClient twitterClient = new TwitterClient(twitterWrapper: wrapper)
-        assertEquals(allTweets, twitterClient.getTweets())
-    }
-
-    public void test_getTweets_givenUnusedHashTagItRetrievesNoTweets() {
-        TwitterClient twitterClient = new TwitterClient(twitterWrapper: wrapper)
-        assertEquals([], twitterClient.getTweets('#unused'))
-    }
-
-    public void test_getTweets_givenPlainTextItRetrievesAllTweets() {
-        TwitterClient twitterClient = new TwitterClient(twitterWrapper: wrapper)
-        assertEquals(allTweets, twitterClient.getTweets("include"))
-    }
-
-    public void test_filterByTweetText_returnsAllTweetsWhenFilterIsEmptyString()
-    {
-        TwitterClient client = new TwitterClient(twitterWrapper: wrapper_forTweetText);
-
-        def tweets = client.getTweetsFilterByTweetText("");
-        assertEquals(3, tweets.size());
-    }
-
-    public void test_filterByTweetText_returnsSomethingWhenExpected()
-    {
-        TwitterClient client = new TwitterClient(twitterWrapper: wrapper_forTweetText);
-
-        def tweets = client.getTweetsFilterByTweetText("tweet");
-        assertTrue(tweets.size() >= 1);
-    }
-
-    public void test_filterByTweetText_returnsCorrectTweets()
-    {
-        TwitterClient client = new TwitterClient(twitterWrapper: wrapper_forTweetText);
-
-        def tweets = client.getTweetsFilterByTweetText("tweet");
-        assertTrue(tweets.size() == 2);
-        assertTrue(tweets.any{tweet -> tweet.tweet == 'a #silly tweet'});
-        assertTrue(tweets.any{tweet -> tweet.tweet == 'a boring tweet'});
-    }
-
-
 }

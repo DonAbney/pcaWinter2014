@@ -5,19 +5,22 @@ class TwitterClient {
 
     TwitterWrapper twitterWrapper
 
-    List getTweets(def hashTag) {
-        List allTweets = twitterWrapper.getTweets()
-        isHashTag(hashTag) ? allTweets.findAll { tweet -> tweet.tweet.contains(hashTag) } : allTweets
+    List<Tweet> getTweets() {
+        twitterWrapper.getTweets()
     }
 
-    def List<List<Map>> getTweetsFilterByTweetText(String textFilter)
-    {
-        twitterWrapper.getTweets().findAll{tweet->tweet.tweet.contains(textFilter)};
+    List<Tweet> getTweetsFilterByTweetText(String textFilter) {
+        def allTweets = twitterWrapper.getTweets()
+
+        !textFilter ? allTweets : allTweets.findAll{
+            tweet->tweet.text.contains( textFilter )};
     }
 
-    private def isHashTag(hashTag) {
-        hashTag?.startsWith('#')
-    }
+    List<Tweet> getTweetsContainingHashTags(List hashTag) {
+        def allTweets = twitterWrapper.getTweets()
 
+        !hashTag ? allTweets : allTweets.findAll{
+            it.hashtags.findAll{ hashTag.contains(it) } }
+    }
 
 }
