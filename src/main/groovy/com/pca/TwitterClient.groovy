@@ -4,20 +4,33 @@ package com.pca
 class TwitterClient {
 
     TwitterWrapper twitterWrapper
+    WhiteList whiteList
+    BlackList blackList
 
-    List getTweets(def hashTag) {
-        List allTweets = twitterWrapper.getTweets()
-        isHashTag(hashTag) ? allTweets.findAll { tweet -> tweet.tweet.contains(hashTag) } : allTweets
+    List<Tweet> getTweets() {
+        twitterWrapper.getTweets()
     }
 
-    def List<List<Map>> getTweetsFilterByTweetText(String textFilter)
+    List<Tweet> getTweetsFilterByTweetText(String textFilter) {
+        def allTweets = twitterWrapper.getTweets()
+
+        !textFilter ? allTweets : allTweets.findAll{
+            tweet->tweet.text.contains( textFilter )};
+    }
+
+    List<Tweet> getTweetsContainingHashTags(String hashTag) {
+        def allTweets = twitterWrapper.getTweets()
+
+        !hashTag ? allTweets : allTweets.findAll{
+            it.hashtags.findAll{ hashTag.equals('#' + it) } }
+
+    }
+
+    def List getTweetsForDisplay()
     {
-        twitterWrapper.getTweets().findAll{tweet->tweet.tweet.contains(textFilter)};
+        twitterWrapper.getTweets().findAll {tweet ->
+            !blackList.isBlackListed(tweet) || whiteList.isHandleInList(tweet.handle)
+        }
     }
-
-    private def isHashTag(hashTag) {
-        hashTag?.startsWith('#')
-    }
-
 
 }
