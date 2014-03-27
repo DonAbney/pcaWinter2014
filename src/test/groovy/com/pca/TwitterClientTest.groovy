@@ -12,7 +12,7 @@ class TwitterClientTest extends GroovyTestCase {
         assertEquals(tweets, client.getTweets())
     }
 
-    public void test_filterByTweetText_returnsAllTweetsWhenFilterIsEmptyString() {
+    public void test_getTweetsFilterByTweetText_returnsAllTweetsWhenFilterIsEmptyString() {
         def tweets = [new Tweet(id: 1, handle: 'aUserName', text: 'no hash tags yo!!'),
                 new Tweet(id: 2, handle: 'anotherUser', text: 'a #silly tweet', hashtags: ['silly']),
                 new Tweet(id: 3, handle: 'aUserName', text: 'a boring tweet')]
