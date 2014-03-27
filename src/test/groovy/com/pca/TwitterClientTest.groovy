@@ -89,6 +89,35 @@ class TwitterClientTest extends GroovyTestCase {
         assertTrue(tweets.any{tweet -> tweet.tweet == 'a boring tweet'});
     }
 
+    public void testNonWhiteListedUserSaysABlackListedWordGetsThrownOut()
+    {
+        def tweets = [new Tweet (id: 1, handle: 'Buggs', text: 'I am whitelisted' ),
+                new Tweet (id: 2, handle: 'Buggs', text: 'blacklist words are bad' ),
+                new Tweet (id: 3, handle: 'danny', text: 'I am not whitelisted' ),
+                new Tweet (id: 4, handle: 'danny', text: 'blacklist blacklist blacklist' )]
+
+        WhiteList whiteList = new WhiteList()
+        BlackList blackList = new BlackList()
+
+        TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper,
+                blackList: blackList,
+                whiteList: whiteList)
+
+        List returnedTweets = client.getTweetsForDisplay()
+
+        assertFalse(returnedTweets.contains(tweets[3]))
+    }
+
+    private TwitterWrapper getOverwrittenTwitterWrapper(List tweets) {
+        new TwitterWrapper() {
+            @Override
+            List getTweets() {
+                return tweets
+            }
+        }
+    }
+
     public void test_getTweets_acceptsTheBlackList()
     {
         Tweet goodTweet = new Tweet(id:0, handle: 'jason', text: 'hey everyone', hashtags: [])

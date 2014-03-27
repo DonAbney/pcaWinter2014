@@ -4,6 +4,7 @@ package com.pca
 class TwitterClient {
 
     TwitterWrapper twitterWrapper
+    WhiteList whiteList
     BlackList blackList
 
     List getTweets(def hashTag) {
@@ -19,4 +20,12 @@ class TwitterClient {
     private def isHashTag(hashTag) {
         hashTag?.startsWith('#')
     }
+
+    def List getTweetsForDisplay()
+    {
+        twitterWrapper.getTweets().findAll {tweet ->
+            !blackList.isBlackListed(tweet) || whiteList.isHandleInList(tweet.handle)
+        }
+    }
+
 }
