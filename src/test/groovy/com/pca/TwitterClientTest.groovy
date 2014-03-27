@@ -2,7 +2,13 @@ package com.pca
 
 class TwitterClientTest extends GroovyTestCase {
 
-    public void test_getTweets_ReturnsAllTweets() {
+    private List allTweets;
+    private TwitterWrapper wrapper;
+    private TwitterWrapper wrapper_forTweetText;
+    private TwitterWrapper wrapper_forWhiteListBlackList
+
+    public void test_getLatestTweets() {
+
         def tweets = [new Tweet(id: 1, handle: 'jason', text: 'hey everyone'),
                 new Tweet(id: 2, handle: 'jason', text: 'yo'),
                 new Tweet(id: 3, handle: 'sleepy', text: 'look, I got a #hashtag', hashtags: ['hashtag'])]
@@ -77,6 +83,74 @@ class TwitterClientTest extends GroovyTestCase {
         TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
         TwitterClient client = new TwitterClient(twitterWrapper: wrapper)
         assertEquals([], client.getTweetsContainingHashTags('#unused'))
+    }
+
+
+
+
+
+
+
+
+    public void testWhiteListedUsersAreNotAffectedByBlackList()
+    {
+        def tweets = [new Tweet (id: 1, handle: 'Buggs', text: 'I am whitelisted' ),
+                new Tweet (id: 2, handle: 'Buggs', text: 'blacklist words are bad' ),
+                new Tweet (id: 3, handle: 'danny', text: 'I am not whitelisted' ),
+                new Tweet (id: 4, handle: 'danny', text: 'blacklist blacklist blacklist' )]
+
+        WhiteList whiteList = new WhiteList()
+        BlackList blackList = new BlackList()
+
+        TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper,
+                blackList: blackList,
+                whiteList: whiteList)
+
+        List returnedTweets = client.getTweetsForDisplay()
+
+        assertTrue(returnedTweets.contains(tweets[0]))
+        assertTrue(returnedTweets.contains(tweets[1]))
+    }
+
+    public void testNonWhiteListedUserSaysANonBlackListedWordGetsPassedThrough()
+    {
+        def tweets = [new Tweet (id: 1, handle: 'Buggs', text: 'I am whitelisted' ),
+                new Tweet (id: 2, handle: 'Buggs', text: 'blacklist words are bad' ),
+                new Tweet (id: 3, handle: 'danny', text: 'I am not whitelisted' ),
+                new Tweet (id: 4, handle: 'danny', text: 'blacklist blacklist blacklist' )]
+
+        WhiteList whiteList = new WhiteList()
+        BlackList blackList = new BlackList()
+
+        TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper,
+                blackList: blackList,
+                whiteList: whiteList)
+
+        List returnedTweets = client.getTweetsForDisplay()
+
+        assertTrue(returnedTweets.contains(tweets[2]))
+    }
+
+    public void testNonWhiteListedUserSaysABlackListedWordGetsThrownOut()
+    {
+        def tweets = [new Tweet (id: 1, handle: 'Buggs', text: 'I am whitelisted' ),
+                new Tweet (id: 2, handle: 'Buggs', text: 'blacklist words are bad' ),
+                new Tweet (id: 3, handle: 'danny', text: 'I am not whitelisted' ),
+                new Tweet (id: 4, handle: 'danny', text: 'blacklist blacklist blacklist' )]
+
+        WhiteList whiteList = new WhiteList()
+        BlackList blackList = new BlackList()
+
+        TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper,
+                blackList: blackList,
+                whiteList: whiteList)
+
+        List returnedTweets = client.getTweetsForDisplay()
+
+        assertFalse(returnedTweets.contains(tweets[3]))
     }
 
     private TwitterWrapper getOverwrittenTwitterWrapper(List tweets) {
