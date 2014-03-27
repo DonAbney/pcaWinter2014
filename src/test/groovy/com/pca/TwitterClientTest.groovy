@@ -89,5 +89,23 @@ class TwitterClientTest extends GroovyTestCase {
         assertTrue(tweets.any{tweet -> tweet.tweet == 'a boring tweet'});
     }
 
+    public void test_getTweets_acceptsTheBlackList()
+    {
+        Tweet goodTweet = new Tweet(id:0, handle: 'jason', text: 'hey everyone', hashtags: [])
+        List tweets = [goodTweet]//,
+        //new Tweet(id:1, handle: 'fred', text: 'this test is #crap', hashtags: ["#crap"]),
+        //new Tweet(id:2, handle: 'derek', text: 'hey everyone', hashtags: [])]
 
+        //[user: 'jason', tweet: 'hey everyone'], [user: 'jason', tweet: 'yo']]
+        TwitterWrapper wrapper = new TwitterWrapper() {
+            @Override
+            List getTweets() {
+                return tweets
+            }
+        }
+        BlackList blackList = new BlackList();
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper, blackList: blackList)
+
+        assertEquals(goodTweet, client.getTweets()[0])
+    }
 }
