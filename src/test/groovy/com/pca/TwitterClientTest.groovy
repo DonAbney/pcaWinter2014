@@ -89,5 +89,19 @@ class TwitterClientTest extends GroovyTestCase {
         assertTrue(tweets.any{tweet -> tweet.tweet == 'a boring tweet'});
     }
 
+    public void testWhiteListedUsersAreNotAffectedByBlackList()
+    {
+        //when a white listed user who says a black listed word it gets passed through without hindrance
+    }
+
+    public void testNonWhiteListedUserSaysANonBlackListedWordGetsPassedThrough()
+    {
+
+    }
+
+    public void testNonWhiteListedUserSaysABlackListedWordGetsThrownOut()
+    {
+
+    }
 
 }
