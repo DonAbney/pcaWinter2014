@@ -26,4 +26,9 @@ class TwitterDisplayTest extends GroovyTestCase
     public void testTweetToHtmlContainsTweetText() {
         assertTrue(twitterDisplay.tweetToHtmlDiv(tweet1).contains(tweet1.text))
     }
+
+    public void testTweetToHtmlContainsHandle() {
+        assertTrue(twitterDisplay.tweetToHtmlDiv(tweet1).contains(tweet1.handle))
+    }
+
 }

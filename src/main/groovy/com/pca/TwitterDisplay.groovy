@@ -15,6 +15,7 @@ class TwitterDisplay {
 
         build.div {
                 p (tweet.text)
+                p (tweet.handle)
             }
 
         writer.toString()
