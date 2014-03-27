@@ -16,11 +16,12 @@ class TwitterClient {
             tweet->tweet.text.contains( textFilter )};
     }
 
-    List<Tweet> getTweetsContainingHashTags(List hashTag) {
+    List<Tweet> getTweetsContainingHashTags(String hashTag) {
         def allTweets = twitterWrapper.getTweets()
 
         !hashTag ? allTweets : allTweets.findAll{
-            it.hashtags.findAll{ hashTag.contains(it) } }
+            it.hashtags.findAll{ hashTag.equals('#' + it) } }
+
     }
 
 }
