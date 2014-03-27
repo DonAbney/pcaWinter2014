@@ -6,7 +6,7 @@ class TwitterDisplay {
 
     StringWriter writer = new StringWriter()
 
-    public String getPublicTimelineHtml() {
+    public String buildPublicTimelineHtml() {
         "<div></div>"
     }
 

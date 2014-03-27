@@ -12,7 +12,7 @@ class TwitterDisplayTest extends GroovyTestCase
 
     public void testDisplayPublicTimelineReturnsADiv()
     {
-        String timeline = twitterDisplay.getPublicTimelineHtml()
+        String timeline = twitterDisplay.buildPublicTimelineHtml()
         assertTrue(timeline.startsWith("<div>"))
         assertTrue(timeline.endsWith("</div>"))
     }
