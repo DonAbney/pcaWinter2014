@@ -1,14 +1,10 @@
 package com.pca
 
-class WhiteList
-{
-    private def handleList = ["Elmer", "Buggs", "Jason"]
+class WhiteList {
+  private def handleList = ["Elmer", "Buggs", "Jason"]
 
-    boolean isHandleInList(String handle)
-    {
-        def foundHandle = handleList.find { it.compareToIgnoreCase(handle) == 0 }
-
-        foundHandle != null
-    }
+  boolean isHandleInList(String handle) {
+    handleList.find { handle.equalsIgnoreCase(it) }
+  }
 
 }

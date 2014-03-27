@@ -16,12 +16,6 @@ class TweetTest extends GroovyTestCase {
         })
     }
 
-    void testCreateTweetWithSingleStringHashtag() {
-        def tweet = new Tweet(id: 7, handle: "aaronmalone",
-                text: "I #yolo'd", hashtags: ["yolo"])
-        assertEquals("yolo", tweet.hashtags[0])
-    }
-
     void testCreateTweetWithMultipleHashtags() {
         def tweet = new Tweet(id: 76, handle: "ninjaMonkey",
                 text: "MONKEY POWER!!! #ninja #monkey", hashtags: ['ninja', 'monkey'])
