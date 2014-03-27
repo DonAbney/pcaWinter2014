@@ -3,11 +3,24 @@ package com.pca
 import org.codehaus.groovy.runtime.typehandling.GroovyCastException
 
 class TweetTest extends GroovyTestCase {
-    void testCreateTweet() {
-        def tweet = new Tweet(id: 7, handle: "jasonDuffy",
+
+    private tweet
+
+    void setUp() {
+        tweet = new Tweet(id: 7, handle: "jasonDuffy",
                 text: "This is what I tweeted. #PCA #YOLO",
                 hashtags: ["PCA", "YOLO"])
+    }
+
+    void testNewTweetIsNotNull() {
         assertNotNull(tweet)
+    }
+
+    void testNewTweetHashtagsAreAListOfStrings() {
+        def expected = ["PCA", "YOLO"]
+        expected.eachWithIndex { hashtag, i ->
+            assertEquals(hashtag, tweet.hashtags[i])
+        }
     }
 
     void testThrowsAnExceptionWhenConstructorHasTheWrongTypeForId() {
@@ -21,5 +34,11 @@ class TweetTest extends GroovyTestCase {
                 text: "MONKEY POWER!!! #ninja #monkey", hashtags: ['ninja', 'monkey'])
         assertEquals('ninja', tweet.hashtags[0])
         assertEquals('monkey', tweet.hashtags[1])
+    }
+
+    void testThrowsAnExceptionWhenHashtagIsSetWithAString() {
+        shouldFail(GroovyCastException.class, {
+            new Tweet(hashtags: "invalid")
+        })
     }
 }
