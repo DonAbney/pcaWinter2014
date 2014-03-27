@@ -3,11 +3,11 @@ package com.pca
 class BlackListTest extends GroovyTestCase {
     void testIsBlackListedReturnsTrueIfBlackListed() {
         def blacklist = new BlackList(handles: ['jason'] as Set)
-        assertTrue(blacklist.isBlackListed(new Tweet(handle: 'jason')))
+        assertTrue(blacklist.isBlackListed(new Tweet(handle: 'jason', text: 'Hi')))
     }
 
     void testIsBlackListedReturnsTrueIfHandleIsNotBlackListed() {
         def blacklist = new BlackList(handles: ['aaron'])
-        assertFalse(blacklist.isBlackListed(new Tweet(handle: 'jason')))
+        assertFalse(blacklist.isBlackListed(new Tweet(handle: 'jason', text: 'Hi')))
     }
 }

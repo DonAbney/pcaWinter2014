@@ -9,7 +9,7 @@ class BlackList {
     }
 
     private boolean isBlackListedUser(Tweet tweet) {
-        handles.find {
+        tweet.text.contains('blacklist') || handles.find {
             tweet.handle.equalsIgnoreCase(it)
         }
     }
