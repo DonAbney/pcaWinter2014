@@ -14,16 +14,13 @@ class TwitterClient {
     List<Tweet> getTweetsFilterByTweetText(String textFilter) {
         def allTweets = twitterWrapper.getTweets()
 
-        !textFilter ? allTweets : allTweets.findAll{
-            tweet->tweet.text.contains( textFilter )};
+        textFilter ? getTweetsContainingText(textFilter, allTweets) : allTweets
     }
 
     List<Tweet> getTweetsContainingHashTags(String hashTag) {
         def allTweets = twitterWrapper.getTweets()
 
-        !hashTag ? allTweets : allTweets.findAll{
-            it.hashtags.findAll{ hashTag.equals('#' + it) } }
-
+        hashTag ? getTweetsContainingHashTag(hashTag, allTweets) : allTweets
     }
 
     def List getTweetsForDisplay()
@@ -31,6 +28,14 @@ class TwitterClient {
         twitterWrapper.getTweets().findAll {tweet ->
             !blackList.isBlackListed(tweet) || whiteList.isHandleInList(tweet.handle)
         }
+    }
+
+    private def List getTweetsContainingText(String textFilter, List<Tweet> allTweets) {
+        allTweets.findAll{tweet->tweet.text.contains( textFilter )}
+    }
+
+    private def List getTweetsContainingHashTag(String hashTag, List<Tweet> allTweets) {
+        allTweets.findAll{ it.hashtags.findAll{ hashTag.equals('#' + it) } }
     }
 
 }

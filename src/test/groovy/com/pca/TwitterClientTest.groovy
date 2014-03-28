@@ -2,11 +2,6 @@ package com.pca
 
 class TwitterClientTest extends GroovyTestCase {
 
-    private List allTweets;
-    private TwitterWrapper wrapper;
-    private TwitterWrapper wrapper_forTweetText;
-    private TwitterWrapper wrapper_forWhiteListBlackList
-
     public void test_getLatestTweets() {
 
         def tweets = [new Tweet(id: 1, handle: 'jason', text: 'hey everyone'),
@@ -83,6 +78,30 @@ class TwitterClientTest extends GroovyTestCase {
         TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
         TwitterClient client = new TwitterClient(twitterWrapper: wrapper)
         assertEquals([], client.getTweetsContainingHashTags('#unused'))
+    }
+
+    public void test_getTweetsContainingHashTags_ReturnsNoTweetsPassingInvalidHashTag() {
+        def tweets = [new Tweet (id: 1, handle: 'someHandle', text: 'tweet 1 #include #monkey', hashtags: ['monkey', 'include'] ),
+                new Tweet (id: 2, handle: 'anotherHandle', text: 'tweet 2' ),
+                new Tweet (id: 3, handle: 'someHandle', text: 'another tweet #include', hashtags: ['include'] ),
+                new Tweet (id: 4, handle: 'lastHandle', text: 'tweet without include hashtag' ),
+                new Tweet (id: 4, handle: 'lastHandle', text: 'tweet with #in part of previous tweet', hashtags: ['in'] )]
+
+        TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper)
+        assertEquals([], client.getTweetsContainingHashTags('include'))
+    }
+
+    public void test_getTweetsContainingHashTags_ReturnsAllTweetsPassingInEmptyString() {
+        def tweets = [new Tweet (id: 1, handle: 'someHandle', text: 'tweet 1 #include #monkey', hashtags: ['monkey', 'include'] ),
+                new Tweet (id: 2, handle: 'anotherHandle', text: 'tweet 2' ),
+                new Tweet (id: 3, handle: 'someHandle', text: 'another tweet #include', hashtags: ['include'] ),
+                new Tweet (id: 4, handle: 'lastHandle', text: 'tweet without include hashtag' ),
+                new Tweet (id: 4, handle: 'lastHandle', text: 'tweet with #in part of previous tweet', hashtags: ['in'] )]
+
+        TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper)
+        assertEquals(tweets, client.getTweetsContainingHashTags(''))
     }
 
 
