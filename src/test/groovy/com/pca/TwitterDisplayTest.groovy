@@ -10,11 +10,22 @@ class TwitterDisplayTest extends GroovyTestCase
             hashtags: ["YOLO", "OOYL"]
     )
 
-    public void testDisplayPublicTimelineReturnsADiv()
+    def tweet2 = new Tweet(id: 2, handle: "jgarrett",
+            text: "Here be another tweet matey #talklikeapirate",
+            hashtags: ["talklikeapirate"]
+    )
+
+    List tweets = [tweet1, tweet2]
+
+    TwitterWrapper wrapper
+    TwitterClient twitterClient
+    List publicTimeline
+
+    void setUp()
     {
-        String timeline = twitterDisplay.buildPublicTimelineHtml()
-        assertTrue(timeline.startsWith("<div>"))
-        assertTrue(timeline.endsWith("</div>"))
+        wrapper = new TwitterWrapper()
+        twitterClient = new TwitterClient(twitterWrapper: wrapper)
+        publicTimeline = (new TwitterClient(twitterWrapper: wrapper)).getTweets()
     }
 
     public void testTweetToHtmlDivReturnsADiv() {
@@ -29,6 +40,22 @@ class TwitterDisplayTest extends GroovyTestCase
 
     public void testTweetToHtmlContainsHandle() {
         assertTrue(twitterDisplay.tweetToHtmlDiv(tweet1).contains(tweet1.handle))
+    }
+
+    public void testTweetsListToHtmlContainsTweetsData() {
+        def tweetsHtml = twitterDisplay.tweetListToHtmlDivs(tweets)
+        assertTrue(tweets.every { tweetsHtml.contains(it.text); tweetsHtml.contains(it.handle); })
+    }
+
+    public void testBuildPublicTimelineHtmlReturnsHtmlDoc() {
+        def tweetDiv = twitterDisplay.buildPublicTimelineHtml(twitterClient)
+        assertTrue(tweetDiv.startsWith("<html>"))
+        assertTrue(tweetDiv.endsWith("</html>"))
+    }
+
+    public void testBuildPublicTimelineHtmlContainsTweetsData() {
+        def tweetsHtml = twitterDisplay.buildPublicTimelineHtml(twitterClient)
+        assertTrue(publicTimeline.every { tweetsHtml.contains(it.text); tweetsHtml.contains(it.handle) })
     }
 
 }

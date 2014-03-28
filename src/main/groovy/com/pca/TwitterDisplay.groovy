@@ -6,11 +6,18 @@ class TwitterDisplay {
 
     StringWriter writer = new StringWriter()
 
-    public String buildPublicTimelineHtml() {
-        "<div></div>"
+    public String buildPublicTimelineHtml(TwitterClient twitterClient) {
+        def build = new MarkupBuilder(writer);
+        build.html{
+            head()
+            body(
+                this.tweetListToHtmlDivs(twitterClient.getTweets())
+            )
+        }
+        writer.toString()
     }
 
-    protected String tweetToHtmlDiv(Tweet tweet) {
+    public String tweetToHtmlDiv(Tweet tweet) {
         def build = new MarkupBuilder(writer)
 
         build.div {
@@ -19,5 +26,12 @@ class TwitterDisplay {
             }
 
         writer.toString()
+    }
+
+    public String tweetListToHtmlDivs(List tweets)
+    {
+        String result
+        tweets.each { result += tweetToHtmlDiv(it) }
+        result
     }
 }
