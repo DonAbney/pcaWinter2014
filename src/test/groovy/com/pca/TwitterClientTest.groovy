@@ -135,22 +135,27 @@ class TwitterClientTest extends GroovyTestCase {
 
     public void testNonWhiteListedUserSaysABlackListedWordGetsThrownOut()
     {
-        def tweets = [new Tweet (id: 1, handle: 'Buggs', text: 'I am whitelisted' ),
-                new Tweet (id: 2, handle: 'Buggs', text: 'blacklist words are bad' ),
-                new Tweet (id: 3, handle: 'danny', text: 'I am not whitelisted' ),
-                new Tweet (id: 4, handle: 'danny', text: 'blacklist blacklist blacklist' )]
+      def goodWhiteList1 = new Tweet (id: 1, handle: 'Buggs', text: 'I am whitelisted' )
+      def goodWhiteList2 = new Tweet (id: 2, handle: 'Buggs', text: 'blacklist words are bad' )
+      def goodNotInBlackList3 = new Tweet (id: 3, handle: 'danny', text: 'I am not whitelisted' )
+      def badBlackList4 = new Tweet (id: 4, handle: 'danny', text: 'blacklist blacklist blacklist' )
 
-        WhiteList whiteList = new WhiteList()
-        BlackList blackList = new BlackList()
+      def tweets = [goodWhiteList1, goodWhiteList2, goodNotInBlackList3, badBlackList4]
 
-        TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
-        TwitterClient client = new TwitterClient(twitterWrapper: wrapper,
+        def whiteList = new WhiteList()
+        def blackList = new BlackList()
+
+        def wrapper = getOverwrittenTwitterWrapper(tweets)
+        def client = new TwitterClient(twitterWrapper: wrapper,
                 blackList: blackList,
                 whiteList: whiteList)
 
         List returnedTweets = client.getTweetsForDisplay()
 
-        assertFalse(returnedTweets.contains(tweets[3]))
+      assert 3 == returnedTweets.size()
+      [goodWhiteList1, goodWhiteList2, goodNotInBlackList3].each { goodTweet ->
+        assert returnedTweets.find {it == goodTweet}
+      }
     }
 
     private TwitterWrapper getOverwrittenTwitterWrapper(List tweets) {
