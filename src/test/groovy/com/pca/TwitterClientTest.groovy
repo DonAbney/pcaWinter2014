@@ -147,4 +147,19 @@ class TwitterClientTest extends GroovyTestCase {
         assertFalse(tweets.contains(notWhitelisted2))
     }
 
+    public void testCanGetListOfBlackListedTweets() {
+        def tweets = [
+                new Tweet(handle: 'jason', text: 'hello'),
+                new Tweet(handle: 'aaron', text: 'goodbye')
+        ]
+        def wrapper = new TwitterWrapper() {
+            @Override
+            List getTweets() {
+                tweets
+            }
+        }
+        def blacklist = new BlackList(handles: ['jason'])
+        def client = new TwitterClient(twitterWrapper: wrapper, blackList: blacklist)
+        assert [tweets[0]] == client.getBlackListedTweets()
+    }
 }

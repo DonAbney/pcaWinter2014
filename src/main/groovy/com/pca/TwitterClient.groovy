@@ -28,5 +28,13 @@ class TwitterClient {
         }
     }
 
-
+    def List getBlackListedTweets(def hashTag) {
+        List returnList = []
+        getTweets(hashTag).each {
+            if(blackList.isBlackListed(it)) {
+                returnList.add(it)
+            }
+        }
+        returnList
+    }
 }
