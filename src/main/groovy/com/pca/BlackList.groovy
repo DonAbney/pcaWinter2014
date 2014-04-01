@@ -6,13 +6,14 @@ package com.pca
 class BlackList {
 
     Set handles
+    Set words = ['blacklist']
 
     boolean isBlackListed(Tweet tweet) {
         isBlackListedUser(tweet)
     }
 
     private boolean isBlackListedUser(Tweet tweet) {
-        tweet.text.contains('blacklist') || handles.find {
+        words.find{tweet.text.contains(it)}  || handles.find {
             tweet.handle.equalsIgnoreCase(it)
         }
     }
