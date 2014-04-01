@@ -198,19 +198,22 @@ class TwitterClientTest extends GroovyTestCase {
     }
 
     public void testCanGetListOfBlackListedTweets() {
-        def tweets = [
-                new Tweet(handle: 'jason', text: 'hello'),
-                new Tweet(handle: 'aaron', text: 'goodbye')
-        ]
+        def badTweet1 = new Tweet(handle: 'jason', text: 'hello')
+        def badTweet2 = new Tweet(handle: 'danny', text: 'I have no idea')
+        def goodTweet = new Tweet(handle: 'aaron', text: 'goodbye')
+        def tweets = [badTweet1, goodTweet, badTweet2]
         def wrapper = new TwitterWrapper() {
             @Override
             List getTweets() {
                 tweets
             }
         }
-        def blacklist = new BlackList(handles: ['jason'])
+        def blacklist = new BlackList(handles: ['jason', 'danny'])
         def client = new TwitterClient(twitterWrapper: wrapper, blackList: blacklist)
-        assert [tweets[0]] == client.getBlackListedTweets()
+
+        assertTrue([badTweet1, badTweet2].every {
+            client.getBlackListedTweets().contains(it)
+        })
     }
 
     private TwitterWrapper getOverwrittenTwitterWrapper(List tweets) {
@@ -238,6 +241,7 @@ class TwitterClientTest extends GroovyTestCase {
 
         assertEquals(goodTweet, client.getTweetsForDisplay()[0])
     }
+
 
     public void test_getTweets_filtersOneBadTweet()
     {
