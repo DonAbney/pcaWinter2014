@@ -7,9 +7,18 @@ class TwitterClient {
     WhiteList whiteList
     BlackList blackList
 
+    public TwitterClient(BlackList blackList = new BlackList()) {
+        this.blackList = blackList
+    }
+
     List getTweets(def hashTag) {
         List allTweets = twitterWrapper.getTweets()
-        isHashTag(hashTag) ? allTweets.findAll { tweet -> tweet.tweet.contains(hashTag) } : allTweets
+        List tweetsFilteredByHashTags = isHashTag(hashTag) ? allTweets.findAll { tweet -> tweet.text.contains(hashTag) } : allTweets
+        List tweetsMinusBlackListedTweets = tweetsFilteredByHashTags.findAll {
+            !blackList.isBlackListed(it)
+        }
+
+        tweetsMinusBlackListedTweets
     }
 
     def List<List<Map>> getTweetsFilterByTweetText(String textFilter)

@@ -31,34 +31,61 @@ class TwitterClientTest extends GroovyTestCase {
     }
 
     public void test_getLatestTweets() {
-        List tweets = [[user: 'jason', tweet: 'hey everyone'], [user: 'jason', tweet: 'yo']]
-        TwitterWrapper wrapper = new TwitterWrapper() {
-            @Override
-            List getTweets() {
-                return tweets
-            }
+        List allTweets = [new Tweet(id: 0, handle: "@user1", text: "tweet 1 #include #monkey", hashtags: ["#include", "#monkey"])]
+        TwitterWrapper wrapper = new TwitterWrapper()
+        wrapper.metaClass.getTweets = {
+            allTweets
         }
+
         TwitterClient client = new TwitterClient(twitterWrapper: wrapper)
-        assert tweets == client.getTweets()
+        assert allTweets == client.getTweets()
     }
 
 
     public void test_getTweets_GivenAHashTagItRetrievesTweetsWithThatHashTag() {
+        List allTweets = [new Tweet(id:0, handle: "@user1", text: "tweet 1 #include #monkey", hashtags: ["#include", "#monkey"]),
+                new Tweet(id: 1, handle:"@user2", text: "tweet 2", hashtags:[]),
+                new Tweet(id:2, handle:"@user3", text:"another tweet #include", hashtags:[])]
+        TwitterWrapper wrapper = new TwitterWrapper()
+
+        wrapper.metaClass.getTweets = {
+            allTweets
+        }
+
         TwitterClient twitterClient = new TwitterClient(twitterWrapper: wrapper)
         assertEquals([allTweets[0], allTweets[2]], twitterClient.getTweets("#include"))
     }
 
     public void test_getTweets_givenNoHashTagItRetrievesAllTweets() {
+        List allTweets = [new Tweet(id: 0, handle: "@user1", text: "tweet 1 #include #monkey", hashtags: ["#include", "#monkey"])]
+        TwitterWrapper wrapper = new TwitterWrapper()
+
+        wrapper.metaClass.getTweets = {
+            allTweets
+        }
+
         TwitterClient twitterClient = new TwitterClient(twitterWrapper: wrapper)
+
         assertEquals(allTweets, twitterClient.getTweets())
     }
 
     public void test_getTweets_givenUnusedHashTagItRetrievesNoTweets() {
+        List allTweets = [new Tweet(id: 0, handle: "@user1", text: "tweet 1 #include #monkey", hashtags: ["#include", "#monkey"])]
+        TwitterWrapper wrapper = new TwitterWrapper()
+        wrapper.metaClass.getTweets = {
+            allTweets
+        }
+
         TwitterClient twitterClient = new TwitterClient(twitterWrapper: wrapper)
         assertEquals([], twitterClient.getTweets('#unused'))
     }
 
     public void test_getTweets_givenPlainTextItRetrievesAllTweets() {
+        List allTweets = [new Tweet(id: 0, handle: "@user1", text: "tweet 1 #include #monkey", hashtags: ["#include", "#monkey"])]
+        TwitterWrapper wrapper = new TwitterWrapper()
+        wrapper.metaClass.getTweets = {
+            allTweets
+        }
         TwitterClient twitterClient = new TwitterClient(twitterWrapper: wrapper)
         assertEquals(allTweets, twitterClient.getTweets("include"))
     }
@@ -121,11 +148,8 @@ class TwitterClientTest extends GroovyTestCase {
     public void test_getTweets_acceptsTheBlackList()
     {
         Tweet goodTweet = new Tweet(id:0, handle: 'jason', text: 'hey everyone', hashtags: [])
-        List tweets = [goodTweet]//,
-        //new Tweet(id:1, handle: 'fred', text: 'this test is #crap', hashtags: ["#crap"]),
-        //new Tweet(id:2, handle: 'derek', text: 'hey everyone', hashtags: [])]
+        List tweets = [goodTweet]
 
-        //[user: 'jason', tweet: 'hey everyone'], [user: 'jason', tweet: 'yo']]
         TwitterWrapper wrapper = new TwitterWrapper() {
             @Override
             List getTweets() {
@@ -136,5 +160,24 @@ class TwitterClientTest extends GroovyTestCase {
         TwitterClient client = new TwitterClient(twitterWrapper: wrapper, blackList: blackList)
 
         assertEquals(goodTweet, client.getTweets()[0])
+    }
+
+    public void test_getTweets_filtersOneBadTweet()
+    {
+        Tweet badTweet = new Tweet(id:0, handle: 'jason', text: 'hello #booger people', hashtags: ['#booger'])
+        List tweets = [badTweet]
+
+        TwitterWrapper wrapper = new TwitterWrapper() {
+            @Override
+            List getTweets() {
+                return tweets
+            }
+        }
+
+        BlackList blackList = new BlackList();
+        blackList.metaClass.isBlackListed = {Tweet tweet -> true}
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper, blackList: blackList)
+
+        assertTrue(client.getTweets().isEmpty())
     }
 }
