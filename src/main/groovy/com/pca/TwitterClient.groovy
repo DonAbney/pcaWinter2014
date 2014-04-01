@@ -7,27 +7,20 @@ class TwitterClient {
     WhiteList whiteList
     BlackList blackList
 
-    public TwitterClient(BlackList blackList = new BlackList()) {
-        this.blackList = blackList
+    List<Tweet> getTweets() {
+        twitterWrapper.getTweets()
     }
 
-    List getTweets(def hashTag) {
-        List allTweets = twitterWrapper.getTweets()
-        List tweetsFilteredByHashTags = isHashTag(hashTag) ? allTweets.findAll { tweet -> tweet.text.contains(hashTag) } : allTweets
-        List tweetsMinusBlackListedTweets = tweetsFilteredByHashTags.findAll {
-            !blackList.isBlackListed(it)
-        }
+    List<Tweet> getTweetsFilterByTweetText(String textFilter) {
+        def allTweets = twitterWrapper.getTweets()
 
-        tweetsMinusBlackListedTweets
+        textFilter ? getTweetsContainingText(textFilter, allTweets) : allTweets
     }
 
-    def List<List<Map>> getTweetsFilterByTweetText(String textFilter)
-    {
-        twitterWrapper.getTweets().findAll{tweet->tweet.tweet.contains(textFilter)};
-    }
+    List<Tweet> getTweetsContainingHashTags(String hashTag) {
+        def allTweets = twitterWrapper.getTweets()
 
-    private def isHashTag(hashTag) {
-        hashTag?.startsWith('#')
+        hashTag ? getTweetsContainingHashTag(hashTag, allTweets) : allTweets
     }
 
     def List getTweetsForDisplay()
@@ -35,6 +28,14 @@ class TwitterClient {
         twitterWrapper.getTweets().findAll {tweet ->
             !blackList.isBlackListed(tweet) || whiteList.isHandleInList(tweet.handle)
         }
+    }
+
+    private def List getTweetsContainingText(String textFilter, List<Tweet> allTweets) {
+        allTweets.findAll{tweet->tweet.text.contains( textFilter )}
+    }
+
+    private def List getTweetsContainingHashTag(String hashTag, List<Tweet> allTweets) {
+        allTweets.findAll{ it.hashtags.findAll{ hashTag.equals('#' + it) } }
     }
 
 }
