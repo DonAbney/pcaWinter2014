@@ -145,7 +145,9 @@ class TwitterClientTest extends GroovyTestCase {
         def otherTweet2 = new Tweet (id: 4, handle: 'danny', text: 'blacklist blacklist blacklist' )
 
         WhiteList whiteList = new WhiteList()
+        whiteList.addHandle("Buggs")
         BlackList blackList = new BlackList()
+
 
         TwitterWrapper wrapper = getOverwrittenTwitterWrapper([expected1, otherTweet1, expected2, otherTweet2])
         TwitterClient client = new TwitterClient(twitterWrapper: wrapper,
@@ -165,6 +167,7 @@ class TwitterClientTest extends GroovyTestCase {
         def otherTweet3 = new Tweet (id: 4, handle: 'danny', text: 'blacklist blacklist blacklist' )
 
         WhiteList whiteList = new WhiteList()
+        whiteList.addHandle("Buggs")
         BlackList blackList = new BlackList()
 
         TwitterWrapper wrapper = getOverwrittenTwitterWrapper([expected, otherTweet1, otherTweet2, otherTweet3])
@@ -185,6 +188,7 @@ class TwitterClientTest extends GroovyTestCase {
                 new Tweet (id: 4, handle: 'danny', text: 'blacklist blacklist blacklist' )]
 
         WhiteList whiteList = new WhiteList()
+        whiteList.addHandle("Buggs")
         BlackList blackList = new BlackList()
 
         TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
