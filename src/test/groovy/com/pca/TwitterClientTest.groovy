@@ -220,12 +220,12 @@ class TwitterClientTest extends GroovyTestCase {
         BlackList blackList = new BlackList();
         TwitterClient client = new TwitterClient(twitterWrapper: wrapper, blackList: blackList)
 
-        assertEquals(goodTweet, client.getTweets()[0])
+        assertEquals(goodTweet, client.getTweetsForDisplay()[0])
     }
 
     public void test_getTweets_filtersOneBadTweet()
     {
-        Tweet badTweet = new Tweet(id:0, handle: 'jason', text: 'hello #booger people', hashtags: ['#booger'])
+        Tweet badTweet = new Tweet(id:0, handle: 'notAWhiteListedUser', text: 'hello #booger people', hashtags: ['#booger'])
         List tweets = [badTweet]
 
         TwitterWrapper wrapper = new TwitterWrapper() {
@@ -236,9 +236,10 @@ class TwitterClientTest extends GroovyTestCase {
         }
 
         BlackList blackList = new BlackList();
+        WhiteList whiteList = new WhiteList();
         blackList.metaClass.isBlackListed = {Tweet tweet -> true}
-        TwitterClient client = new TwitterClient(twitterWrapper: wrapper, blackList: blackList)
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper, blackList: blackList, whiteList: whiteList)
 
-        assertTrue(client.getTweets().isEmpty())
+        assertTrue(client.getTweetsForDisplay().isEmpty())
     }
 }
