@@ -179,27 +179,22 @@ class TwitterClientTest extends GroovyTestCase {
 
     public void testNonWhiteListedUserSaysABlackListedWordGetsThrownOut()
     {
-      def goodWhiteList1 = new Tweet (id: 1, handle: 'Buggs', text: 'I am whitelisted' )
-      def goodWhiteList2 = new Tweet (id: 2, handle: 'Buggs', text: 'blacklist words are bad' )
-      def goodNotInBlackList3 = new Tweet (id: 3, handle: 'danny', text: 'I am not whitelisted' )
-      def badBlackList4 = new Tweet (id: 4, handle: 'danny', text: 'blacklist blacklist blacklist' )
+        def tweets = [new Tweet (id: 1, handle: 'Buggs', text: 'I am whitelisted' ),
+                new Tweet (id: 2, handle: 'Buggs', text: 'blacklist words are bad' ),
+                new Tweet (id: 3, handle: 'danny', text: 'I am not whitelisted' ),
+                new Tweet (id: 4, handle: 'danny', text: 'blacklist blacklist blacklist' )]
 
-      def tweets = [goodWhiteList1, goodWhiteList2, goodNotInBlackList3, badBlackList4]
+        WhiteList whiteList = new WhiteList()
+        BlackList blackList = new BlackList()
 
-        def whiteList = new WhiteList()
-        def blackList = new BlackList()
-
-        def wrapper = getOverwrittenTwitterWrapper(tweets)
-        def client = new TwitterClient(twitterWrapper: wrapper,
+        TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper,
                 blackList: blackList,
                 whiteList: whiteList)
 
         List returnedTweets = client.getTweetsForDisplay()
 
-      assert 3 == returnedTweets.size()
-      [goodWhiteList1, goodWhiteList2, goodNotInBlackList3].each { goodTweet ->
-        assert returnedTweets.find {it == goodTweet}
-      }
+        assertFalse(returnedTweets.contains(tweets[3]))
     }
 
     public void testCanGetListOfBlackListedTweets() {
@@ -225,5 +220,42 @@ class TwitterClientTest extends GroovyTestCase {
                 return tweets
             }
         }
+    }
+
+    public void test_getTweets_acceptsTheBlackList()
+    {
+        Tweet goodTweet = new Tweet(id:0, handle: 'jason', text: 'hey everyone', hashtags: [])
+        List tweets = [goodTweet]
+
+        TwitterWrapper wrapper = new TwitterWrapper() {
+            @Override
+            List getTweets() {
+                return tweets
+            }
+        }
+        BlackList blackList = new BlackList();
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper, blackList: blackList)
+
+        assertEquals(goodTweet, client.getTweetsForDisplay()[0])
+    }
+
+    public void test_getTweets_filtersOneBadTweet()
+    {
+        Tweet badTweet = new Tweet(id:0, handle: 'notAWhiteListedUser', text: 'hello #booger people', hashtags: ['#booger'])
+        List tweets = [badTweet]
+
+        TwitterWrapper wrapper = new TwitterWrapper() {
+            @Override
+            List getTweets() {
+                return tweets
+            }
+        }
+
+        BlackList blackList = new BlackList();
+        WhiteList whiteList = new WhiteList();
+        blackList.metaClass.isBlackListed = {Tweet tweet -> true}
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper, blackList: blackList, whiteList: whiteList)
+
+        assertTrue(client.getTweetsForDisplay().isEmpty())
     }
 }
