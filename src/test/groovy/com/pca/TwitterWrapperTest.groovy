@@ -15,28 +15,23 @@ class TwitterWrapperTest extends GroovyTestCase {
         getWrapper().getTweets()
     }
 
-    void testReturnsIterableOfMaps() {
-        assert getTweets().every { tweet -> tweet instanceof Map }
-    }
-
-    void testReturnsIterableOfMapsWithExpectedKeys() {
-        def expectedKeys = ['user', 'tweet'] as Set;
-        assert getTweets().every { tweet -> expectedKeys == tweet.keySet() }
+    void testReturnsIterableOfTweets() {
+        assert getTweets().every { tweet -> tweet instanceof Tweet }
     }
 
     void testUserAsString() {
-        assert getTweets().every { tweet -> tweet.user instanceof String }
+        assert getTweets().every { tweet -> tweet.handle instanceof String }
     }
 
     void testTweetAsString() {
-        assert getTweets().every { tweet -> tweet.tweet instanceof String }
+        assert getTweets().every { tweet -> tweet.text instanceof String }
     }
 
     void testNoBlankUsers() {
-        assert getTweets().every { tweet -> tweet.user.size() > 0 }
+        assert getTweets().every { tweet -> tweet.handle.size() > 0 }
     }
 
     void testNoBlankTweets() {
-        assert getTweets().every { tweet -> tweet.tweet.size() > 0 }
+        assert getTweets().every { tweet -> tweet.text.size() > 0 }
     }
 }

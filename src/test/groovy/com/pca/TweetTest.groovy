@@ -29,6 +29,13 @@ class TweetTest extends GroovyTestCase {
         })
     }
 
+    void testCreateTweetWithMultipleHashtags() {
+        def tweet = new Tweet(id: 76, handle: "ninjaMonkey",
+                text: "MONKEY POWER!!! #ninja #monkey", hashtags: ['ninja', 'monkey'])
+        assertEquals('ninja', tweet.hashtags[0])
+        assertEquals('monkey', tweet.hashtags[1])
+    }
+
     void testThrowsAnExceptionWhenHashtagIsSetWithAString() {
         shouldFail(GroovyCastException.class, {
             new Tweet(hashtags: "invalid")
