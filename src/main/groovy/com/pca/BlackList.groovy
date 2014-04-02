@@ -1,11 +1,9 @@
 package com.pca
 
-/**
- * Created by andrew on 3/25/14.
- */
 class BlackList {
 
     Set handles
+    Set words = ['blacklist']
 
     boolean isBlackListed(Tweet tweet) {
         isBlackListedUser(tweet)
@@ -15,5 +13,9 @@ class BlackList {
         tweet.text.contains('blacklist') || handles.find {
             tweet.handle.equalsIgnoreCase(it)
         }
+    }
+
+    public void addWord(String bad_word) {
+        words.add(bad_word)
     }
 }
