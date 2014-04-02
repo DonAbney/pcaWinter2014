@@ -30,6 +30,16 @@ class TwitterClient {
         }
     }
 
+    def List getBlackListedTweets() {
+        List returnList = []
+        getTweets().each {
+            if(blackList.isBlackListed(it)) {
+                returnList.add(it)
+            }
+        }
+        returnList
+    }
+
     private def List getTweetsContainingText(String textFilter, List<Tweet> allTweets) {
         allTweets.findAll{tweet->tweet.text.contains( textFilter )}
     }

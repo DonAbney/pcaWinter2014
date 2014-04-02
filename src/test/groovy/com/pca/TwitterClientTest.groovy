@@ -197,7 +197,35 @@ class TwitterClientTest extends GroovyTestCase {
         assertFalse(returnedTweets.contains(tweets[3]))
     }
 
-    public void test_getTweetsForDisplay_acceptsTheBlackList()
+    public void testCanGetListOfBlackListedTweets() {
+        def badTweet1 = new Tweet(handle: 'jason', text: 'hello')
+        def badTweet2 = new Tweet(handle: 'danny', text: 'I have no idea')
+        def goodTweet = new Tweet(handle: 'aaron', text: 'goodbye')
+        def tweets = [badTweet1, goodTweet, badTweet2]
+        def wrapper = new TwitterWrapper() {
+            @Override
+            List getTweets() {
+                tweets
+            }
+        }
+        def blacklist = new BlackList(handles: ['jason', 'danny'])
+        def client = new TwitterClient(twitterWrapper: wrapper, blackList: blacklist)
+
+        assertTrue([badTweet1, badTweet2].every {
+            client.getBlackListedTweets().contains(it)
+        })
+    }
+
+    private TwitterWrapper getOverwrittenTwitterWrapper(List tweets) {
+        new TwitterWrapper() {
+            @Override
+            List getTweets() {
+                return tweets
+            }
+        }
+    }
+
+    public void test_getTweets_acceptsTheBlackList()
     {
         Tweet goodTweet = new Tweet(id:0, handle: 'jason', text: 'hey everyone', hashtags: [])
         List tweets = [goodTweet]
@@ -254,15 +282,6 @@ class TwitterClientTest extends GroovyTestCase {
         assertEquals(2, client.getTweetsForDisplay().size())
         assertTrue(client.getTweetsForDisplay().contains(goodTweet1))
         assertTrue(client.getTweetsForDisplay().contains(goodTweet3))
-    }
-    
-    private TwitterWrapper getOverwrittenTwitterWrapper(List tweets) {
-        new TwitterWrapper() {
-            @Override
-            List getTweets() {
-                return tweets
-            }
-        }
     }
 
 }
