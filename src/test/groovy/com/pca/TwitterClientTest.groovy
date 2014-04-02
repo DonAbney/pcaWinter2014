@@ -201,6 +201,25 @@ class TwitterClientTest extends GroovyTestCase {
         assertFalse(returnedTweets.contains(tweets[3]))
     }
 
+    public void testCanGetListOfBlackListedTweets() {
+        def badTweet1 = new Tweet(handle: 'jason', text: 'hello')
+        def badTweet2 = new Tweet(handle: 'danny', text: 'I have no idea')
+        def goodTweet = new Tweet(handle: 'aaron', text: 'goodbye')
+        def tweets = [badTweet1, goodTweet, badTweet2]
+        def wrapper = new TwitterWrapper() {
+            @Override
+            List getTweets() {
+                tweets
+            }
+        }
+        def blacklist = new BlackList(handles: ['jason', 'danny'])
+        def client = new TwitterClient(twitterWrapper: wrapper, blackList: blacklist)
+
+        assertTrue([badTweet1, badTweet2].every {
+            client.getBlackListedTweets().contains(it)
+        })
+    }
+
     private TwitterWrapper getOverwrittenTwitterWrapper(List tweets) {
         new TwitterWrapper() {
             @Override
@@ -227,7 +246,7 @@ class TwitterClientTest extends GroovyTestCase {
         assertEquals(goodTweet, client.getTweetsForDisplay()[0])
     }
 
-    public void test_getTweets_filtersOneBadTweet()
+    public void test_getTweetsForDisplay_filtersOneBadTweet()
     {
         Tweet badTweet = new Tweet(id:0, handle: 'notAWhiteListedUser', text: 'hello #booger people', hashtags: ['#booger'])
         List tweets = [badTweet]
@@ -246,4 +265,27 @@ class TwitterClientTest extends GroovyTestCase {
 
         assertTrue(client.getTweetsForDisplay().isEmpty())
     }
+
+    public void test_getTweetsForDisplay_filtersOneBadTweetWhileNotFilteringGoodTweets()
+    {
+        def goodTweet1 = new Tweet(id: 1, handle: 'Buggs', text: 'I am whitelisted')
+
+        def goodTweet3 = new Tweet(id: 3, handle: 'danny', text: 'I am not whitelisted')
+        def tweets = [goodTweet1,
+                goodTweet3,
+                new Tweet (id: 4, handle: 'danny', text: 'blacklist blacklist blacklist' ),
+                new Tweet (id: 4, handle: 'danny', text: 'blah blah blah' )]
+
+        BlackList blackList = new BlackList();
+        blackList.words = ["blah", "blacklist"]
+        WhiteList whiteList = new WhiteList();
+
+        def wrapper = [getTweets: { tweets }] as TwitterWrapper
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper, blackList: blackList, whiteList: whiteList)
+
+        assertEquals(2, client.getTweetsForDisplay().size())
+        assertTrue(client.getTweetsForDisplay().contains(goodTweet1))
+        assertTrue(client.getTweetsForDisplay().contains(goodTweet3))
+    }
+
 }
