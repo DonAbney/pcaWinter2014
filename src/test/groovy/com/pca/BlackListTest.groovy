@@ -6,7 +6,7 @@ class BlackListTest extends GroovyTestCase {
         assertTrue(blacklist.isBlackListed(new Tweet(handle: 'jason', text: 'Hi')))
     }
 
-    void testIsBlackListedReturnsTrueIfHandleIsNotBlackListed() {
+    void testIsBlackListedReturnsFalseIfHandleIsNotBlackListed() {
         def blacklist = new BlackList(handles: ['aaron'])
         assertFalse(blacklist.isBlackListed(new Tweet(handle: 'jason', text: 'Hi')))
     }
