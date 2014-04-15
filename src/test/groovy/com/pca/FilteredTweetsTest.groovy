@@ -38,4 +38,14 @@ class FilteredTweetsTest extends GroovyTestCase{
 
         assert filteredTweets.getWhiteListedTweets().contains(tweet1)
     }
+
+    public void testFilteredTweetsAcceptsAListOfTweetsThatPassedTheFilter() {
+        Tweet tweet1 = new Tweet(handle: 'Monkey', id: '1')
+        List blacklistedTweets = []
+        List whitelistedTweets = []
+        List tweets = [tweet1]
+        FilteredTweets filteredTweets = new FilteredTweets(blacklistedTweets, whitelistedTweets, tweets)
+
+        assert filteredTweets.tweets.contains(tweet1)
+    }
 }
