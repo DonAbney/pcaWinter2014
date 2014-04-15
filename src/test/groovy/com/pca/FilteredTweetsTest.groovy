@@ -46,6 +46,6 @@ class FilteredTweetsTest extends GroovyTestCase{
         List tweets = [tweet1]
         FilteredTweets filteredTweets = new FilteredTweets(blacklistedTweets, whitelistedTweets, tweets)
 
-        assert filteredTweets.tweets.contains(tweet1)
+        assert filteredTweets.grayListedTweets.contains(tweet1)
     }
 }

@@ -4,12 +4,12 @@ class FilteredTweets
 {
     List blackListedTweets = [];
     List whiteListedTweets = [];
-    List tweets = [];
+    List grayListedTweets = [];
 
     public FilteredTweets(List blackList = [], List whiteList = [], List tweets = []){
         blackListedTweets = blackList
         whiteListedTweets = whiteList
-        this.tweets = tweets
+        this.grayListedTweets = tweets
     }
 
     private void setBlackListedTweets(List tweets) {}
