@@ -5,7 +5,21 @@ class TwitterProcessor {
     private Set<String> blackListWords = new HashSet<String>()
     private Set<String> whiteListUsers = new HashSet<String>()
 
-    void addBlackListUser(String user) {}
+    void addBlackListUser(String handle)
+    {
+        def handle_in_list = stringCaseInsensitivelyInList(handle, blackListUsers)
+        if(handle != null && !handle_in_list)
+        {
+            blackListUsers.add(handle);
+        }
+
+    }
+
+    private boolean stringCaseInsensitivelyInList(string, list)
+    {
+        return list.any{string.toUpperCase() == it.toUpperCase()}
+    }
+
     void addBlackListWord(String user) {}
     void addWhiteListUser(String user) {}
 
