@@ -1,33 +1,35 @@
 package com.pca
 
 class TwitterProcessor {
-    private Set<String> blackListUsers = new HashSet<String>()
-    private Set<String> blackListWords = new HashSet<String>()
-    private Set<String> whiteListUsers = new HashSet<String>()
+    private Set<String> blacklistedHandles = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
+    private Set<String> blacklistedWords = new HashSet<String>()
+    private Set<String> whitelistedHandles = new HashSet<String>()
 
-    void addBlackListUser(String handle)
-    {
-        def handle_in_list = stringCaseInsensitivelyInList(handle, blackListUsers)
-        if(handle != null && !handle_in_list)
-        {
-            blackListUsers.add(handle);
+    void blacklistHandle(String handle) {
+        if(handle) {
+            blacklistedHandles.add(handle);
+            unwhitelistHandle(handle)
         }
-
     }
 
-    private boolean stringCaseInsensitivelyInList(string, list)
-    {
-        return list.any{string.toUpperCase() == it.toUpperCase()}
+    private def gatherCaseInsensitiveMatchingStringsFromIterable(String string, Collection collection) {
+        collection.findAll{ string.toUpperCase() == it.toUpperCase() }
     }
 
-    void addBlackListWord(String user) {}
-    void addWhiteListUser(String user) {}
+    void blacklistWord(String handle) {}
+    void whitelistHandle(String handle) {}
 
-    void removeBlackListUser(String user) {}
-    void removeBlackListWord(String user) {}
-    void removeWhiteListUser(String user) {}
+    void unblacklistHandle(String handle) {
+        Collection found_handles = gatherCaseInsensitiveMatchingStringsFromIterable(handle, blacklistedHandles)
+        found_handles.each{ found_handle -> blacklistedHandles.remove(found_handle) }
+    }
 
-    private void setBlackListUsers(Set<String> blackListUsers) {}
-    private void setBlackListWords(Set<String> blackListWords) {}
-    private void setWhiteListUsers(Set<String> whiteListUsers) {}
+    void unblacklistWord(String word) {}
+    void unwhitelistHandle(String handle) {
+        whitelistedHandles.remove(handle) // Just a stub to test blacklisting. Should get replaced by merge of card 128.
+    }
+
+    private void setBlacklistHandles(Set<String> blacklistedHandles) {}
+    private void setBlacklistWords(Set<String> blacklistedWords) {}
+    private void setWhitelistHandles(Set<String> whitelistedHandles) {}
 }
