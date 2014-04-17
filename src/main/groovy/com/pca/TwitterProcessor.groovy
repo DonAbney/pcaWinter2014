@@ -12,16 +12,11 @@ class TwitterProcessor {
         }
     }
 
-    private def gatherCaseInsensitiveMatchingStringsFromIterable(String string, Collection collection) {
-        collection.findAll{ string.toUpperCase() == it.toUpperCase() }
-    }
-
     void blacklistWord(String handle) {}
     void whitelistHandle(String handle) {}
 
     void unblacklistHandle(String handle) {
-        Collection found_handles = gatherCaseInsensitiveMatchingStringsFromIterable(handle, blacklistedHandles)
-        found_handles.each{ found_handle -> blacklistedHandles.remove(found_handle) }
+       blacklistedHandles.remove(handle)
     }
 
     void unblacklistWord(String word) {}
