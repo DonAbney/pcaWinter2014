@@ -4,48 +4,64 @@ class FilteredTweetsTest extends GroovyTestCase{
 
     public void testFilteredTweetsAcceptsAListOfBlackListedTweets() {
         Tweet tweet1 = new Tweet(handle: 'Monkey', id: '1')
-        List tweets = []
-        tweets << tweet1
+        List tweets = [tweet1]
         FilteredTweets filteredTweets = new FilteredTweets(tweets)
 
+        assert filteredTweets.blackListedTweets.size() == 1
         assert filteredTweets.blackListedTweets.contains(tweet1)
-    }
-
-    public void testFilteredTweetsAllowsAddingToBlacklist(){
-        Tweet tweet1 = new Tweet(handle: 'Monkey', id: '1')
-        List tweets = []
-        tweets << tweet1
-        FilteredTweets filteredTweets = new FilteredTweets(tweets)
-
-        assert filteredTweets.getBlackListedTweets().contains(tweet1)
     }
 
     public void testFilteredTweetsAcceptsAListOfWhiteListedTweets() {
         Tweet tweet1 = new Tweet(handle: 'Monkey', id: '1')
-        List blacklistedTweets = []
-        List whitelistedTweets = []
-        whitelistedTweets << tweet1
-        FilteredTweets filteredTweets = new FilteredTweets(blacklistedTweets, whitelistedTweets)
+        List whitelistedTweets = [tweet1]
+        FilteredTweets filteredTweets = new FilteredTweets([], whitelistedTweets)
 
+        assert filteredTweets.whiteListedTweets.size() == 1
         assert filteredTweets.whiteListedTweets.contains(tweet1)
     }
 
-    public void testFilteredTweetsAllowsAddingToWhitelist(){
+    public void testFilteredTweetsAcceptsAListOfGrayListedTweets() {
         Tweet tweet1 = new Tweet(handle: 'Monkey', id: '1')
-        List blacklistedTweets = []
-        List whitelistedTweets = [tweet1]
-        FilteredTweets filteredTweets = new FilteredTweets(blacklistedTweets, whitelistedTweets)
+        List grayListedTweets = [tweet1]
+        FilteredTweets filteredTweets = new FilteredTweets([], [], grayListedTweets)
 
-        assert filteredTweets.getWhiteListedTweets().contains(tweet1)
+        assert filteredTweets.grayListedTweets.size() == 1
+        assert filteredTweets.grayListedTweets.contains(tweet1)
     }
 
-    public void testFilteredTweetsAcceptsAListOfTweetsThatPassedTheFilter() {
+    public void testFilteredTweetsDoesNotAllowBlacklistToBeOverwritten(){
         Tweet tweet1 = new Tweet(handle: 'Monkey', id: '1')
-        List blacklistedTweets = []
-        List whitelistedTweets = []
-        List tweets = [tweet1]
-        FilteredTweets filteredTweets = new FilteredTweets(blacklistedTweets, whitelistedTweets, tweets)
+        Tweet tweet2 = new Tweet(handle: 'Ninja', id: '2')
+        Tweet tweet3 = new Tweet(handle: 'Banana', id: '3')
+        List expectedTweets = [tweet1, tweet2]
+        List unexpectedTweets = [tweet3]
+        FilteredTweets filteredTweets = new FilteredTweets(expectedTweets)
 
-        assert filteredTweets.grayListedTweets.contains(tweet1)
+        filteredTweets.blackListedTweets = unexpectedTweets
+        assert filteredTweets.blackListedTweets == expectedTweets
+    }
+
+    public void testFilteredTweetsDoesNotAllowWhitelistToBeOverwritten(){
+        Tweet tweet1 = new Tweet(handle: 'Monkey', id: '1')
+        Tweet tweet2 = new Tweet(handle: 'Ninja', id: '2')
+        Tweet tweet3 = new Tweet(handle: 'Banana', id: '3')
+        List expectedTweets = [tweet1, tweet2]
+        List unexpectedTweets = [tweet3]
+        FilteredTweets filteredTweets = new FilteredTweets([], expectedTweets)
+
+        filteredTweets.whiteListedTweets = unexpectedTweets
+        assert filteredTweets.whiteListedTweets == expectedTweets
+    }
+
+    public void testFilteredTweetsDoesNotAllowGraylistToBeOverwritten(){
+        Tweet tweet1 = new Tweet(handle: 'Monkey', id: '1')
+        Tweet tweet2 = new Tweet(handle: 'Ninja', id: '2')
+        Tweet tweet3 = new Tweet(handle: 'Banana', id: '3')
+        List expectedTweets = [tweet1, tweet2]
+        List unexpectedTweets = [tweet3]
+        FilteredTweets filteredTweets = new FilteredTweets([], [], expectedTweets)
+
+        filteredTweets.grayListedTweets = unexpectedTweets
+        assert filteredTweets.grayListedTweets == expectedTweets
     }
 }

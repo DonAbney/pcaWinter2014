@@ -13,4 +13,6 @@ class FilteredTweets
     }
 
     private void setBlackListedTweets(List tweets) {}
+    private void setWhiteListedTweets(List tweets) {}
+    private void setGrayListedTweets(List tweets) {}
 }
