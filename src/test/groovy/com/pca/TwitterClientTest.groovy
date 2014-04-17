@@ -22,17 +22,6 @@ class TwitterClientTest extends GroovyTestCase {
         assertEquals(3, results.size())
     }
 
-    public void testGetTweetsFilterByTweetTextReturnsAllTweetsWhenFilterIsEmptyString() {
-        def expectedTweets = []
-        3.times {
-            expectedTweets << tweetBuilder.buildTweet()
-        }
-
-        TwitterWrapper wrapper = getOverwrittenTwitterWrapper(expectedTweets)
-        TwitterClient client = new TwitterClient(twitterWrapper: wrapper);
-        assert 3 == client.getTweets().size()
-    }
-
     public void testGetTweetsFilterByTweetTextReturnsCorrectTweets() {
         def expected1 = tweetBuilder.buildTweet(text: "#tweet")
         def expected2 = tweetBuilder.buildTweet(text: "tweet")
