@@ -13,8 +13,8 @@ class FilteredTweetsTest extends GroovyTestCase{
 
     public void testFilteredTweetsAcceptsAListOfWhiteListedTweets() {
         Tweet tweet1 = new Tweet(handle: 'Monkey', id: '1')
-        List whitelistedTweets = [tweet1]
-        FilteredTweets filteredTweets = new FilteredTweets([], whitelistedTweets)
+        List tweets = [tweet1]
+        FilteredTweets filteredTweets = new FilteredTweets([], tweets)
 
         assert filteredTweets.whiteListedTweets.size() == 1
         assert filteredTweets.whiteListedTweets.contains(tweet1)
@@ -22,8 +22,8 @@ class FilteredTweetsTest extends GroovyTestCase{
 
     public void testFilteredTweetsAcceptsAListOfGrayListedTweets() {
         Tweet tweet1 = new Tweet(handle: 'Monkey', id: '1')
-        List grayListedTweets = [tweet1]
-        FilteredTweets filteredTweets = new FilteredTweets([], [], grayListedTweets)
+        List tweets = [tweet1]
+        FilteredTweets filteredTweets = new FilteredTweets([], [], tweets)
 
         assert filteredTweets.grayListedTweets.size() == 1
         assert filteredTweets.grayListedTweets.contains(tweet1)
