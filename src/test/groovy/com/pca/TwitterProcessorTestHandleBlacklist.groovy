@@ -71,6 +71,15 @@ class TwitterProcessorTestHandleBlacklist extends GroovyTestCase{
         assertFalse(handle in processor.blacklistedHandles)
     }
 
+    void testUnblacklistingHandleYieldsCorrectNumberOfBlacklistedHandles()
+    {
+        def handles = ['firstHandle', '2ndHandle', 'handleThree']
+        TwitterProcessor processor = new TwitterProcessor()
+        handles.each{ handle -> processor.blacklistHandle(handle) }
+        processor.unblacklistHandle(handles[1])
+        assertEquals(2, processor.blacklistedHandles.size())
+    }
+
     void testUnblacklistingAHandleRemovesNoOtherHandles() {
         def handles = ['firstHandle', '2ndHandle', 'handleThree']
         TwitterProcessor processor = new TwitterProcessor()
@@ -88,5 +97,7 @@ class TwitterProcessorTestHandleBlacklist extends GroovyTestCase{
         processor.blacklistHandle(handle)
         assertFalse(handle in processor.whitelistedHandles)
     }
+
+    
 
 }

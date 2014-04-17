@@ -12,7 +12,7 @@ class TwitterProcessor {
         }
     }
 
-    private def gatherCaseInsensitiveMatchingStringsFromIterable(String string, Collection collection) {
+    private Collection<String> gatherCaseInsensitiveMatchingStringsFromIterable(String string, Collection collection) {
         collection.findAll{ string.toUpperCase() == it.toUpperCase() }
     }
 
