@@ -5,7 +5,7 @@ class TwitterProcessorWhitelistTest extends GroovyTestCase {
     void testAddWhitelistHandle() {
         TwitterProcessor twitterProcessor = new TwitterProcessor()
 
-        twitterProcessor.addWhiteListHandle("Elmer")
+        twitterProcessor.whitelistHandle("Elmer")
 
         assert twitterProcessor.whitelistedHandles.contains("Elmer")
     }
@@ -13,8 +13,8 @@ class TwitterProcessorWhitelistTest extends GroovyTestCase {
     void testAddWhitelistHandleCaseInsensitive() {
         TwitterProcessor twitterProcessor = new TwitterProcessor()
 
-        twitterProcessor.addWhiteListHandle("eLMER")
-        twitterProcessor.addWhiteListHandle("Elmer")
+        twitterProcessor.whitelistHandle("eLMER")
+        twitterProcessor.whitelistHandle("Elmer")
 
         assert twitterProcessor.whitelistedHandles.size() == 1
     }
@@ -22,8 +22,8 @@ class TwitterProcessorWhitelistTest extends GroovyTestCase {
     void testAddWhitelistMultipleHandles() {
         TwitterProcessor twitterProcessor = new TwitterProcessor()
 
-        twitterProcessor.addWhiteListHandle("Elmer")
-        twitterProcessor.addWhiteListHandle("Fudd")
+        twitterProcessor.whitelistHandle("Elmer")
+        twitterProcessor.whitelistHandle("Fudd")
 
         assert twitterProcessor.whitelistedHandles.size() == 2
     }
@@ -31,7 +31,7 @@ class TwitterProcessorWhitelistTest extends GroovyTestCase {
     void testAddWhitelistNullHandle() {
         TwitterProcessor twitterProcessor = new TwitterProcessor()
 
-        twitterProcessor.addWhiteListHandle(null)
+        twitterProcessor.whitelistHandle(null)
 
         assert twitterProcessor.whitelistedHandles.size() == 0
     }
@@ -40,55 +40,55 @@ class TwitterProcessorWhitelistTest extends GroovyTestCase {
         TwitterProcessor twitterProcessor = new TwitterProcessor()
         String emptyHandle = ""
 
-        twitterProcessor.addWhiteListHandle(emptyHandle)
+        twitterProcessor.whitelistHandle(emptyHandle)
 
         assert twitterProcessor.whitelistedHandles.size() == 0
     }
 
-    void testRemoveWhitelistHandle() {
+    void testunwhitelistHandle() {
         TwitterProcessor twitterProcessor = new TwitterProcessor()
         String handle = "Elmer"
 
-        twitterProcessor.addWhiteListHandle(handle)
-        twitterProcessor.removeWhiteListHandle(handle)
+        twitterProcessor.whitelistHandle(handle)
+        twitterProcessor.unwhitelistHandle(handle)
 
         assert twitterProcessor.whitelistedHandles.size() == 0
     }
 
-    void testRemoveWhitelistHandleCaseInsensitive() {
+    void testunwhitelistHandleCaseInsensitive() {
         TwitterProcessor twitterProcessor = new TwitterProcessor()
 
-        twitterProcessor.addWhiteListHandle("Elmer")
-        twitterProcessor.removeWhiteListHandle("eLMER")
+        twitterProcessor.whitelistHandle("Elmer")
+        twitterProcessor.unwhitelistHandle("eLMER")
 
         assert twitterProcessor.whitelistedHandles.size() == 0
     }
 
     void testRemovingHandleNotInListLeavesOtherHandles() {
         TwitterProcessor twitterProcessor = new TwitterProcessor()
-        twitterProcessor.addWhiteListHandle("One")
-        twitterProcessor.addWhiteListHandle("Two")
+        twitterProcessor.whitelistHandle("One")
+        twitterProcessor.whitelistHandle("Two")
 
-        twitterProcessor.removeWhiteListHandle("Three")
+        twitterProcessor.unwhitelistHandle("Three")
 
         assert twitterProcessor.whitelistedHandles.size() == 2
     }
 
     void testRemovingLeavesOtherHandles() {
         TwitterProcessor twitterProcessor = new TwitterProcessor()
-        twitterProcessor.addWhiteListHandle("One")
-        twitterProcessor.addWhiteListHandle("Two")
+        twitterProcessor.whitelistHandle("One")
+        twitterProcessor.whitelistHandle("Two")
 
-        twitterProcessor.removeWhiteListHandle("One")
+        twitterProcessor.unwhitelistHandle("One")
 
         assert twitterProcessor.whitelistedHandles.size() == 1
     }
 
     void testRemovingNullDoesNothing() {
         TwitterProcessor twitterProcessor = new TwitterProcessor()
-        twitterProcessor.addWhiteListHandle("hi")
+        twitterProcessor.whitelistHandle("hi")
 
-        twitterProcessor.removeWhiteListHandle(null)
+        twitterProcessor.unwhitelistHandle(null)
 
         assert twitterProcessor.whitelistedHandles.size() == 1
     }
