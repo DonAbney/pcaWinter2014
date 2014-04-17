@@ -1,17 +1,25 @@
 package com.pca
 
 class TwitterProcessor {
-    private Set<String> blackListHandles = new HashSet<String>()
-    private Set<String> blackListWords = new HashSet<String>()
-    private Set<String> whiteListHandles = new HashSet<String>()
+    private Set<String> blacklistedHandles = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
+    private Set<String> blacklistedWords   = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
+    private Set<String> whitelistedHandles = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
 
     void addBlackListHandle(String handle) {}
     void addBlackListWord(String word) {}
-    void addWhiteListHandle(String handle) {}
+    void addWhiteListHandle(String handle) {
+        if (handle) {
+            whitelistedHandles.add(handle)
+        }
+    }
 
     void removeBlackListHandle(String handle) {}
     void removeBlackListWord(String word) {}
-    void removeWhiteListHandle(String handle) {}
+    void removeWhiteListHandle(String handle) {
+        if (handle) {
+            whitelistedHandles.remove(handle)
+        }
+    }
 
     private void setBlackListHandles(Set<String> blackListHandles) {}
     private void setBlackListWords(Set<String> blackListWords) {}
