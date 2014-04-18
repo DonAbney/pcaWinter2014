@@ -126,14 +126,12 @@ class TwitterClientTest extends GroovyTestCase {
 
     public void testNonWhiteListedUserSaysABlackListedWordGetsThrownOut()
     {
-        def tweets = [new Tweet (id: 1, handle: 'Buggs', text: 'I am whitelisted' ),
-                new Tweet (id: 2, handle: 'Buggs', text: 'blacklist words are bad' ),
-                new Tweet (id: 3, handle: 'danny', text: 'I am not whitelisted' ),
-                new Tweet (id: 4, handle: 'danny', text: 'blacklist blacklist blacklist' )]
+        def tweets = [tweetBuilder.buildTweet(handle: 'Buggs', text: 'I am whitelisted' )]
 
         WhiteList whiteList = new WhiteList()
-        whiteList.addHandle("Buggs")
+        whiteList.addHandle("someone else")
         BlackList blackList = new BlackList()
+        blackList.setWords(["whitelisted"] as Set)
 
         TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
         TwitterClient client = new TwitterClient(twitterWrapper: wrapper,
@@ -142,7 +140,7 @@ class TwitterClientTest extends GroovyTestCase {
 
         List returnedTweets = client.getTweetsForDisplay()
 
-        assertFalse(returnedTweets.contains(tweets[3]))
+        assert returnedTweets.isEmpty()
     }
 
     public void testCanGetListOfBlackListedTweets() {
