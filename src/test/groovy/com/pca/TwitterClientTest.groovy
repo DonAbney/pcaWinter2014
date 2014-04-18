@@ -89,23 +89,21 @@ class TwitterClientTest extends GroovyTestCase {
     }
 
     public void testWhiteListedUsersAreNotAffectedByBlackList() {
-        def expected1 = new Tweet (handle: 'Buggs', text: 'I am whitelisted' )
-        def expected2 = new Tweet (handle: 'Buggs', text: 'blacklist words are bad' )
+        def expected = tweetBuilder.buildTweet(handle: 'Buggs', text: 'blacklist words are bad' )
 
         WhiteList whiteList = new WhiteList()
         whiteList.addHandle("Buggs")
         BlackList blackList = new BlackList()
+        blackList.setWords(["bad"] as Set)
 
-
-        TwitterWrapper wrapper = getOverwrittenTwitterWrapper([expected1, expected2])
+        TwitterWrapper wrapper = getOverwrittenTwitterWrapper([expected])
         TwitterClient client = new TwitterClient(twitterWrapper: wrapper,
                 blackList: blackList,
                 whiteList: whiteList)
 
         List results = client.getTweetsForDisplay()
 
-        assertTrue(results.contains(expected1))
-        assertTrue(results.contains(expected2))
+        assert results.contains(expected)
     }
 
     public void testNonWhiteListedUserSaysANonBlackListedWordGetsPassedThrough() {
