@@ -90,7 +90,7 @@ class TwitterClientTest extends GroovyTestCase {
 
         TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
         TwitterClient client = new TwitterClient(twitterWrapper: wrapper)
-        assertEquals([], client.getTweetsContainingHashTags('include'))
+        assert client.getTweetsContainingHashTags('include').isEmpty()
     }
 
     public void testGetTweetsContainingHashTagsReturnsAllTweetsPassingInEmptyFilter() {
@@ -101,9 +101,9 @@ class TwitterClientTest extends GroovyTestCase {
         TwitterClient client = new TwitterClient(twitterWrapper: wrapper)
         def results = client.getTweetsContainingHashTags();
 
-        assertEquals(2, results.size())
-        assertTrue(results.contains(expected1))
-        assertTrue(results.contains(expected2))
+        assert 2 == results.size()
+        assert results.contains(expected1)
+        assert results.contains(expected2)
     }
 
     public void testWhiteListedUsersAreNotAffectedByBlackList() {
@@ -192,26 +192,19 @@ class TwitterClientTest extends GroovyTestCase {
         assert client.getTweetsForDisplay().isEmpty()
     }
 
-    public void test_getTweetsForDisplay_filtersOneBadTweetWhileNotFilteringGoodTweets()
+    public void testGetTweetsForDisplayFiltersOneBadTweetWhileNotFilteringGoodTweets()
     {
-        def goodTweet1 = new Tweet(id: 1, handle: 'Buggs', text: 'I am whitelisted')
-
-        def goodTweet3 = new Tweet(id: 3, handle: 'danny', text: 'I am not whitelisted')
-        def tweets = [goodTweet1,
-                goodTweet3,
-                new Tweet (id: 4, handle: 'danny', text: 'blacklist blacklist blacklist' ),
-                new Tweet (id: 4, handle: 'danny', text: 'blah blah blah' )]
+        def goodTweet1 = tweetBuilder.buildTweet()
+        def badTweet = tweetBuilder.buildTweet(text: 'blacklist')
+        def tweets = [goodTweet1, badTweet]
 
         BlackList blackList = new BlackList();
-        blackList.words = ["blah", "blacklist"]
-        WhiteList whiteList = new WhiteList();
+        blackList.words = ["blacklist"]
 
         def wrapper = getOverwrittenTwitterWrapper(tweets)
-        TwitterClient client = new TwitterClient(twitterWrapper: wrapper, blackList: blackList, whiteList: whiteList)
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper, blackList: blackList, whiteList: new WhiteList())
 
-        assertEquals(2, client.getTweetsForDisplay().size())
+        assertEquals(1, client.getTweetsForDisplay().size())
         assertTrue(client.getTweetsForDisplay().contains(goodTweet1))
-        assertTrue(client.getTweetsForDisplay().contains(goodTweet3))
     }
-
 }
