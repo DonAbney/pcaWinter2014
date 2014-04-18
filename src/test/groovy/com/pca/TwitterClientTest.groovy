@@ -19,7 +19,7 @@ class TwitterClientTest extends GroovyTestCase {
         TwitterClient client = new TwitterClient(twitterWrapper: wrapper)
         List results = client.getTweets()
 
-        assertEquals(3, results.size())
+        assert 3 == results.size()
     }
 
     public void testGetTweetsFilterByTweetTextReturnsCorrectTweets() {
@@ -42,11 +42,11 @@ class TwitterClientTest extends GroovyTestCase {
         TwitterClient client = new TwitterClient(twitterWrapper: wrapper)
 
         def results = client.getTweetsContainingHashTags('#include');
-        assertEquals(1, results.size())
-        assertTrue(results.contains(expectedTweet))
+        assert 1 == results.size()
+        assert results.contains(expectedTweet)
     }
 
-    public void test_getTweetsContainingHashTags_ReturnsAllTweetsWithNullFilter() {
+    public void testGetTweetsContainingHashTagsReturnsAllTweetsWithNullFilter() {
         def expected1 = tweetBuilder.buildTweet()
         def expected2 = tweetBuilder.buildTweet()
 
@@ -54,19 +54,17 @@ class TwitterClientTest extends GroovyTestCase {
         TwitterClient client = new TwitterClient(twitterWrapper: wrapper)
 
         def results = client.getTweetsContainingHashTags();
-        assertTrue(results.contains(expected1))
-        assertTrue(results.contains(expected2))
+        assert results.contains(expected1)
+        assert results.contains(expected2)
     }
 
-    public void test_getTweetsContainingHashTags_ReturnsNoTweetsPassingInUnusedHashTag() {
-        def tweets = [new Tweet (id: 1, handle: 'someHandle', text: 'tweet 1 #include #monkey', hashtags: ['monkey', 'include'] ),
-                new Tweet (id: 2, handle: 'anotherHandle', text: 'tweet 2' ),
-                new Tweet (id: 3, handle: 'someHandle', text: 'another tweet #include', hashtags: ['include'] ),
-                new Tweet (id: 4, handle: 'lastHandle', text: 'tweet without include hashtag' )]
+    public void testGetTweetsContainingHashTagsReturnsNoTweetsPassingInUnusedHashTag() {
+        def tweets = [tweetBuilder.buildTweet(hashtags: ['monkey', 'include'] ),
+            tweetBuilder.buildTweet()]
 
         TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
         TwitterClient client = new TwitterClient(twitterWrapper: wrapper)
-        assertEquals([], client.getTweetsContainingHashTags('#unused'))
+        assert client.getTweetsContainingHashTags('#unused').isEmpty()
     }
 
     public void test_getTweetsContainingHashTags_ReturnsNoTweetsPassingInvalidHashTag() {
