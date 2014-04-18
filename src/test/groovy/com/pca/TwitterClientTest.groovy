@@ -178,19 +178,18 @@ class TwitterClientTest extends GroovyTestCase {
         assert false == actualBlackListedTweets.contains(goodTweet)
     }
 
-    public void test_getTweetsForDisplay_filtersOneBadTweet()
+    public void testGetTweetsForDisplayFiltersOneBadTweet()
     {
-        Tweet badTweet = new Tweet(id:0, handle: 'notAWhiteListedUser', text: 'hello #booger people', hashtags: ['#booger'])
+        Tweet badTweet = tweetBuilder.buildTweet(text: 'hello #booger people')
         List tweets = [badTweet]
 
         TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
 
         BlackList blackList = new BlackList();
-        WhiteList whiteList = new WhiteList();
-        blackList.metaClass.isBlackListed = {Tweet tweet -> true}
-        TwitterClient client = new TwitterClient(twitterWrapper: wrapper, blackList: blackList, whiteList: whiteList)
+        blackList.setWords(["booger"] as Set)
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper, blackList: blackList, whiteList: new WhiteList())
 
-        assertTrue(client.getTweetsForDisplay().isEmpty())
+        assert client.getTweetsForDisplay().isEmpty()
     }
 
     public void test_getTweetsForDisplay_filtersOneBadTweetWhileNotFilteringGoodTweets()
