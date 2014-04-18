@@ -10,6 +10,12 @@ class TwitterClientTest extends GroovyTestCase {
         tweetBuilder = new TweetBuilder()
     }
 
+    private TwitterWrapper getOverwrittenTwitterWrapper(List tweets) {
+        TwitterWrapper wrapper = new TwitterWrapper()
+        wrapper.metaClass.getTweets = { tweets }
+        wrapper
+    }
+
     public void testGetLatestTweets() {
         def expectedTweets = []
         3.times {
@@ -20,6 +26,18 @@ class TwitterClientTest extends GroovyTestCase {
         List results = client.getTweets()
 
         assert 3 == results.size()
+    }
+
+    public void testGetTweetsAcceptsTheBlackList()
+    {
+        Tweet goodTweet = tweetBuilder.buildTweet()
+        List tweets = [goodTweet]
+
+        TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
+        BlackList blackList = new BlackList();
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper, blackList: blackList)
+
+        assert goodTweet == client.getTweetsForDisplay()[0]
     }
 
     public void testGetTweetsFilterByTweetTextReturnsCorrectTweets() {
@@ -160,43 +178,12 @@ class TwitterClientTest extends GroovyTestCase {
         assert false == actualBlackListedTweets.contains(goodTweet)
     }
 
-    private TwitterWrapper getOverwrittenTwitterWrapper(List tweets) {
-        new TwitterWrapper() {
-            @Override
-            List getTweets() {
-                return tweets
-            }
-        }
-    }
-
-    public void test_getTweets_acceptsTheBlackList()
-    {
-        Tweet goodTweet = new Tweet(id:0, handle: 'jason', text: 'hey everyone', hashtags: [])
-        List tweets = [goodTweet]
-
-        TwitterWrapper wrapper = new TwitterWrapper() {
-            @Override
-            List getTweets() {
-                return tweets
-            }
-        }
-        BlackList blackList = new BlackList();
-        TwitterClient client = new TwitterClient(twitterWrapper: wrapper, blackList: blackList)
-
-        assertEquals(goodTweet, client.getTweetsForDisplay()[0])
-    }
-
     public void test_getTweetsForDisplay_filtersOneBadTweet()
     {
         Tweet badTweet = new Tweet(id:0, handle: 'notAWhiteListedUser', text: 'hello #booger people', hashtags: ['#booger'])
         List tweets = [badTweet]
 
-        TwitterWrapper wrapper = new TwitterWrapper() {
-            @Override
-            List getTweets() {
-                return tweets
-            }
-        }
+        TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
 
         BlackList blackList = new BlackList();
         WhiteList whiteList = new WhiteList();
@@ -220,7 +207,7 @@ class TwitterClientTest extends GroovyTestCase {
         blackList.words = ["blah", "blacklist"]
         WhiteList whiteList = new WhiteList();
 
-        def wrapper = [getTweets: { tweets }] as TwitterWrapper
+        def wrapper = getOverwrittenTwitterWrapper(tweets)
         TwitterClient client = new TwitterClient(twitterWrapper: wrapper, blackList: blackList, whiteList: whiteList)
 
         assertEquals(2, client.getTweetsForDisplay().size())
