@@ -1,195 +1,155 @@
 package com.pca
 
+import com.pca.test.utils.TweetBuilder
+
 class TwitterClientTest extends GroovyTestCase {
 
-    public void test_getLatestTweets() {
-        def expected1 = new Tweet(id: 1, handle: 'jason', text: 'hey everyone')
-        def expected2 = new Tweet(id: 2, handle: 'jason', text: 'yo')
-        def expected3 = new Tweet(id: 3, handle: 'sleepy', text: 'look, I got a #hashtag', hashtags: ['hashtag'])
+    private TweetBuilder tweetBuilder
 
-        TwitterWrapper wrapper = getOverwrittenTwitterWrapper([expected1, expected2, expected3])
+    public void setUp() {
+        tweetBuilder = new TweetBuilder()
+    }
+
+    private TwitterWrapper getOverwrittenTwitterWrapper(List tweets) {
+        TwitterWrapper wrapper = new TwitterWrapper()
+        wrapper.metaClass.getTweets = { tweets }
+        wrapper
+    }
+
+    public void testGetLatestTweets() {
+        def expectedTweets = []
+        3.times {
+            expectedTweets << tweetBuilder.buildTweet()
+        }
+        TwitterWrapper wrapper = getOverwrittenTwitterWrapper(expectedTweets)
         TwitterClient client = new TwitterClient(twitterWrapper: wrapper)
         List results = client.getTweets()
 
-        assertEquals(3, results.size())
-        assertTrue(results.contains(expected1))
-        assertTrue(results.contains(expected2))
-        assertTrue(results.contains(expected3))
+        assert 3 == results.size()
     }
 
-    public void test_getTweetsFilterByTweetText_returnsAllTweetsWhenFilterIsEmptyString() {
-        def expected1 = new Tweet(id: 1, handle: 'aUserName', text: 'no hash tags yo!!')
-        def expected2 = new Tweet(id: 2, handle: 'anotherUser', text: 'a #silly tweet', hashtags: ['silly'])
-        def expected3 = new Tweet(id: 3, handle: 'aUserName', text: 'a boring tweet')
+    public void testGetTweetsAcceptsTheBlackList()
+    {
+        Tweet goodTweet = tweetBuilder.buildTweet()
+        List tweets = [goodTweet]
 
-        TwitterWrapper wrapper = getOverwrittenTwitterWrapper([expected1, expected2, expected3])
-        TwitterClient client = new TwitterClient(twitterWrapper: wrapper);
-        List results = client.getTweets()
+        TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
+        BlackList blackList = new BlackList();
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper, blackList: blackList)
 
-        assertEquals(3, results.size())
-        assertTrue(results.contains(expected1))
-        assertTrue(results.contains(expected2))
-        assertTrue(results.contains(expected3))
+        assert goodTweet == client.getTweetsForDisplay()[0]
     }
 
-    public void test_getTweetsFilterByTweetText_ReturnsAllTweetsWithNullFilter() {
-        def expected1 = new Tweet(id: 1, handle: 'aUserName', text: 'no hash tags yo!!')
-        def expected2 = new Tweet(id: 2, handle: 'anotherUser', text: 'a #silly tweet', hashtags: ['silly'])
-        def expected3 = new Tweet(id: 3, handle: 'aUserName', text: 'a boring tweet')
-
-        TwitterWrapper wrapper = getOverwrittenTwitterWrapper([expected1, expected2, expected3])
-        TwitterClient client = new TwitterClient(twitterWrapper: wrapper);
-        List results = client.getTweets()
-
-        assertEquals(3, results.size())
-        assertTrue(results.contains(expected1))
-        assertTrue(results.contains(expected2))
-        assertTrue(results.contains(expected3))
-    }
-
-    public void test_getTweetsFilterByTweetText_ReturnsCorrectTweets() {
-        def expected1 = new Tweet(id: 2, handle: 'anotherUser', text: 'a #silly tweet', hashtags: ['silly'])
-        def expected2 = new Tweet(id: 3, handle: 'aUserName', text: 'a boring tweet')
-        def unexpected = new Tweet(id: 1, handle: 'aUserName', text: 'no hash tags yo!!')
-
+    public void testGetTweetsFilterByTweetTextReturnsCorrectTweets() {
+        def expected1 = tweetBuilder.buildTweet(text: "#tweet")
+        def expected2 = tweetBuilder.buildTweet(text: "tweet")
+        def unexpected = tweetBuilder.buildTweet()
 
         TwitterWrapper wrapper = getOverwrittenTwitterWrapper([unexpected, expected1, expected2])
         TwitterClient client = new TwitterClient(twitterWrapper: wrapper);
 
         def results = client.getTweetsFilterByTweetText('tweet');
-        assertEquals(2, results.size());
-        assertTrue(results.contains(expected1))
-        assertTrue(results.contains(expected2))
+        assert 2 == results.size()
+        assert results.contains(expected1)
+        assert results.contains(expected2)
     }
 
-    public void test_getTweetsContainingHashTags_ReturnsTweetsContainingPassedInHashTag() {
-        def expected1 = new Tweet (id: 1, handle: 'someHandle', text: 'tweet 1 #include #monkey', hashtags: ['monkey', 'include'] )
-        def expected2 = new Tweet (id: 3, handle: 'someHandle', text: 'another tweet #include', hashtags: ['include'] )
-        def unexpected1 = new Tweet (id: 2, handle: 'anotherHandle', text: 'tweet 2' )
-        def unexpected2 = new Tweet (id: 4, handle: 'lastHandle', text: 'tweet without include hashtag' )
-        def unexpected3 = new Tweet (id: 5, handle: 'lastHandle', text: 'tweet with #in part of previous tweet', hashtags: ['in'] )
-
-
-        TwitterWrapper wrapper = getOverwrittenTwitterWrapper([expected1, expected2, unexpected1, unexpected2, unexpected3])
+    public void testGetTweetsContainingHashTagsReturnsTweetsContainingPassedInHashTag() {
+        def expectedTweet = tweetBuilder.buildTweet(hashtags: ['include'])
+        TwitterWrapper wrapper = getOverwrittenTwitterWrapper([expectedTweet, tweetBuilder.buildTweet()])
         TwitterClient client = new TwitterClient(twitterWrapper: wrapper)
 
         def results = client.getTweetsContainingHashTags('#include');
-        assertEquals(2, results.size())
-        assertTrue(results.contains(expected1))
-        assertTrue(results.contains(expected2))
+        assert 1 == results.size()
+        assert results.contains(expectedTweet)
     }
 
-    public void test_getTweetsContainingHashTags_ReturnsAllTweetsWithNullFilter() {
-        def expected1 = new Tweet (id: 1, handle: 'someHandle', text: 'tweet 1 #include #monkey', hashtags: ['monkey', 'include'] )
-        def expected2 = new Tweet (id: 2, handle: 'anotherHandle', text: 'tweet 2' )
-        def expected3 = new Tweet (id: 3, handle: 'someHandle', text: 'another tweet #include', hashtags: ['include'] )
-        def expected4 = new Tweet (id: 4, handle: 'lastHandle', text: 'tweet without include hashtag' )
+    public void testGetTweetsContainingHashTagsReturnsAllTweetsWithNullFilter() {
+        def expected1 = tweetBuilder.buildTweet()
+        def expected2 = tweetBuilder.buildTweet()
 
-        TwitterWrapper wrapper = getOverwrittenTwitterWrapper([expected1, expected2, expected3, expected4])
+        TwitterWrapper wrapper = getOverwrittenTwitterWrapper([expected1, expected2])
         TwitterClient client = new TwitterClient(twitterWrapper: wrapper)
 
         def results = client.getTweetsContainingHashTags();
-        assertEquals(4, results.size())
-        assertTrue(results.contains(expected1))
-        assertTrue(results.contains(expected2))
-        assertTrue(results.contains(expected3))
-        assertTrue(results.contains(expected4))
+        assert results.contains(expected1)
+        assert results.contains(expected2)
     }
 
-    public void test_getTweetsContainingHashTags_ReturnsNoTweetsPassingInUnusedHashTag() {
-        def tweets = [new Tweet (id: 1, handle: 'someHandle', text: 'tweet 1 #include #monkey', hashtags: ['monkey', 'include'] ),
-                new Tweet (id: 2, handle: 'anotherHandle', text: 'tweet 2' ),
-                new Tweet (id: 3, handle: 'someHandle', text: 'another tweet #include', hashtags: ['include'] ),
-                new Tweet (id: 4, handle: 'lastHandle', text: 'tweet without include hashtag' )]
+    public void testGetTweetsContainingHashTagsReturnsNoTweetsPassingInUnusedHashTag() {
+        def tweets = [tweetBuilder.buildTweet(hashtags: ['monkey', 'include'] ),
+            tweetBuilder.buildTweet()]
 
         TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
         TwitterClient client = new TwitterClient(twitterWrapper: wrapper)
-        assertEquals([], client.getTweetsContainingHashTags('#unused'))
+        assert client.getTweetsContainingHashTags('#unused').isEmpty()
     }
 
-    public void test_getTweetsContainingHashTags_ReturnsNoTweetsPassingInvalidHashTag() {
-        def tweets = [new Tweet (id: 1, handle: 'someHandle', text: 'tweet 1 #include #monkey', hashtags: ['monkey', 'include'] ),
-                new Tweet (id: 2, handle: 'anotherHandle', text: 'tweet 2' ),
-                new Tweet (id: 3, handle: 'someHandle', text: 'another tweet #include', hashtags: ['include'] ),
-                new Tweet (id: 4, handle: 'lastHandle', text: 'tweet without include hashtag' ),
-                new Tweet (id: 4, handle: 'lastHandle', text: 'tweet with #in part of previous tweet', hashtags: ['in'] )]
+    public void testGetTweetsContainingHashTagsReturnsNoTweetsPassingInvalidHashTag() {
+        def tweets = [tweetBuilder.buildTweet(hashtags: ['include'] )]
 
         TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
         TwitterClient client = new TwitterClient(twitterWrapper: wrapper)
-        assertEquals([], client.getTweetsContainingHashTags('include'))
+        assert client.getTweetsContainingHashTags('include').isEmpty()
     }
 
-    public void test_getTweetsContainingHashTags_ReturnsAllTweetsPassingInEmptyFilter() {
-        def expected1 = new Tweet (id: 1, handle: 'someHandle', text: 'tweet 1 #include #monkey', hashtags: ['monkey', 'include'] )
-        def expected2 = new Tweet (id: 2, handle: 'anotherHandle', text: 'tweet 2' )
-        def expected3 = new Tweet (id: 3, handle: 'someHandle', text: 'another tweet #include', hashtags: ['include'] )
-        def expected4 = new Tweet (id: 4, handle: 'lastHandle', text: 'tweet without include hashtag' )
-        def expected5 = new Tweet (id: 4, handle: 'lastHandle', text: 'tweet with #in part of previous tweet', hashtags: ['in'] )
+    public void testGetTweetsContainingHashTagsReturnsAllTweetsPassingInEmptyFilter() {
+        def expected1 = tweetBuilder.buildTweet(hashtags: ['monkey', 'include'] )
+        def expected2 = tweetBuilder.buildTweet()
 
-        TwitterWrapper wrapper = getOverwrittenTwitterWrapper([expected1, expected2, expected3, expected4, expected5])
+        TwitterWrapper wrapper = getOverwrittenTwitterWrapper([expected1, expected2])
         TwitterClient client = new TwitterClient(twitterWrapper: wrapper)
         def results = client.getTweetsContainingHashTags();
 
-        assertEquals(5, results.size())
-        assertTrue(results.contains(expected1))
-        assertTrue(results.contains(expected2))
-        assertTrue(results.contains(expected3))
-        assertTrue(results.contains(expected4))
-        assertTrue(results.contains(expected5))
+        assert 2 == results.size()
+        assert results.contains(expected1)
+        assert results.contains(expected2)
     }
 
     public void testWhiteListedUsersAreNotAffectedByBlackList() {
-        def expected1 = new Tweet (id: 1, handle: 'Buggs', text: 'I am whitelisted' )
-        def expected2 = new Tweet (id: 2, handle: 'Buggs', text: 'blacklist words are bad' )
-        def otherTweet1 = new Tweet (id: 3, handle: 'danny', text: 'I am not whitelisted' )
-        def otherTweet2 = new Tweet (id: 4, handle: 'danny', text: 'blacklist blacklist blacklist' )
+        def expected = tweetBuilder.buildTweet(handle: 'Buggs', text: 'blacklist words are bad' )
 
         WhiteList whiteList = new WhiteList()
         whiteList.addHandle("Buggs")
         BlackList blackList = new BlackList()
+        blackList.setWords(["bad"] as Set)
 
-
-        TwitterWrapper wrapper = getOverwrittenTwitterWrapper([expected1, otherTweet1, expected2, otherTweet2])
+        TwitterWrapper wrapper = getOverwrittenTwitterWrapper([expected])
         TwitterClient client = new TwitterClient(twitterWrapper: wrapper,
                 blackList: blackList,
                 whiteList: whiteList)
 
         List results = client.getTweetsForDisplay()
 
-        assertTrue(results.contains(expected1))
-        assertTrue(results.contains(expected2))
+        assert results.contains(expected)
     }
 
     public void testNonWhiteListedUserSaysANonBlackListedWordGetsPassedThrough() {
-        def expected = new Tweet (id: 3, handle: 'danny', text: 'I am not whitelisted' )
-        def otherTweet1 = new Tweet (id: 1, handle: 'Buggs', text: 'I am whitelisted' )
-        def otherTweet2 = new Tweet (id: 2, handle: 'Buggs', text: 'blacklist words are bad' )
-        def otherTweet3 = new Tweet (id: 4, handle: 'danny', text: 'blacklist blacklist blacklist' )
+        def expected = new Tweet (handle: 'danny', text: 'good' )
 
         WhiteList whiteList = new WhiteList()
         whiteList.addHandle("Buggs")
         BlackList blackList = new BlackList()
+        blackList.setWords(["bad"] as Set)
 
-        TwitterWrapper wrapper = getOverwrittenTwitterWrapper([expected, otherTweet1, otherTweet2, otherTweet3])
+        TwitterWrapper wrapper = getOverwrittenTwitterWrapper([expected])
         TwitterClient client = new TwitterClient(twitterWrapper: wrapper,
                 blackList: blackList,
                 whiteList: whiteList)
 
         List results = client.getTweetsForDisplay()
 
-        assertTrue(results.contains(expected))
+        assert results.contains(expected)
     }
 
     public void testNonWhiteListedUserSaysABlackListedWordGetsThrownOut()
     {
-        def tweets = [new Tweet (id: 1, handle: 'Buggs', text: 'I am whitelisted' ),
-                new Tweet (id: 2, handle: 'Buggs', text: 'blacklist words are bad' ),
-                new Tweet (id: 3, handle: 'danny', text: 'I am not whitelisted' ),
-                new Tweet (id: 4, handle: 'danny', text: 'blacklist blacklist blacklist' )]
+        def tweets = [tweetBuilder.buildTweet(handle: 'Buggs', text: 'I am whitelisted' )]
 
         WhiteList whiteList = new WhiteList()
-        whiteList.addHandle("Buggs")
+        whiteList.addHandle("someone else")
         BlackList blackList = new BlackList()
+        blackList.setWords(["whitelisted"] as Set)
 
         TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
         TwitterClient client = new TwitterClient(twitterWrapper: wrapper,
@@ -198,94 +158,53 @@ class TwitterClientTest extends GroovyTestCase {
 
         List returnedTweets = client.getTweetsForDisplay()
 
-        assertFalse(returnedTweets.contains(tweets[3]))
+        assert returnedTweets.isEmpty()
     }
 
     public void testCanGetListOfBlackListedTweets() {
-        def badTweet1 = new Tweet(handle: 'jason', text: 'hello')
-        def badTweet2 = new Tweet(handle: 'danny', text: 'I have no idea')
-        def goodTweet = new Tweet(handle: 'aaron', text: 'goodbye')
+        def badTweet1 = tweetBuilder.buildTweet(handle: 'jason')
+        def badTweet2 = tweetBuilder.buildTweet(handle: 'danny')
+        def goodTweet = tweetBuilder.buildTweet(handle: 'aaron')
+
         def tweets = [badTweet1, goodTweet, badTweet2]
-        def wrapper = new TwitterWrapper() {
-            @Override
-            List getTweets() {
-                tweets
-            }
-        }
+        def wrapper = getOverwrittenTwitterWrapper(tweets)
         def blacklist = new BlackList(handles: ['jason', 'danny'])
         def client = new TwitterClient(twitterWrapper: wrapper, blackList: blacklist)
 
-        assertTrue([badTweet1, badTweet2].every {
-            client.getBlackListedTweets().contains(it)
-        })
+        def actualBlackListedTweets = client.getBlackListedTweets()
+
+        assert actualBlackListedTweets.contains(badTweet1)
+        assert actualBlackListedTweets.contains(badTweet2)
+        assert false == actualBlackListedTweets.contains(goodTweet)
     }
 
-    private TwitterWrapper getOverwrittenTwitterWrapper(List tweets) {
-        new TwitterWrapper() {
-            @Override
-            List getTweets() {
-                return tweets
-            }
-        }
-    }
-
-    public void test_getTweets_acceptsTheBlackList()
+    public void testGetTweetsForDisplayFiltersOneBadTweet()
     {
-        Tweet goodTweet = new Tweet(id:0, handle: 'jason', text: 'hey everyone', hashtags: [])
-        List tweets = [goodTweet]
-
-        TwitterWrapper wrapper = new TwitterWrapper() {
-            @Override
-            List getTweets() {
-                return tweets
-            }
-        }
-        BlackList blackList = new BlackList();
-        TwitterClient client = new TwitterClient(twitterWrapper: wrapper, blackList: blackList)
-
-        assertEquals(goodTweet, client.getTweetsForDisplay()[0])
-    }
-
-    public void test_getTweetsForDisplay_filtersOneBadTweet()
-    {
-        Tweet badTweet = new Tweet(id:0, handle: 'notAWhiteListedUser', text: 'hello #booger people', hashtags: ['#booger'])
+        Tweet badTweet = tweetBuilder.buildTweet(text: 'hello #booger people')
         List tweets = [badTweet]
 
-        TwitterWrapper wrapper = new TwitterWrapper() {
-            @Override
-            List getTweets() {
-                return tweets
-            }
-        }
+        TwitterWrapper wrapper = getOverwrittenTwitterWrapper(tweets)
 
         BlackList blackList = new BlackList();
-        WhiteList whiteList = new WhiteList();
-        blackList.metaClass.isBlackListed = {Tweet tweet -> true}
-        TwitterClient client = new TwitterClient(twitterWrapper: wrapper, blackList: blackList, whiteList: whiteList)
+        blackList.setWords(["booger"] as Set)
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper, blackList: blackList, whiteList: new WhiteList())
 
-        assertTrue(client.getTweetsForDisplay().isEmpty())
+        assert client.getTweetsForDisplay().isEmpty()
     }
 
-    public void test_getTweetsForDisplay_filtersOneBadTweetWhileNotFilteringGoodTweets()
+    public void testGetTweetsForDisplayFiltersOneBadTweetWhileNotFilteringGoodTweets()
     {
-        def goodTweet1 = new Tweet(id: 1, handle: 'Buggs', text: 'I am whitelisted')
-
-        def goodTweet3 = new Tweet(id: 3, handle: 'danny', text: 'I am not whitelisted')
-        def tweets = [goodTweet1,
-                goodTweet3,
-                new Tweet (id: 4, handle: 'danny', text: 'blacklist blacklist blacklist' ),
-                new Tweet (id: 4, handle: 'danny', text: 'blah blah blah' )]
+        def goodTweet1 = tweetBuilder.buildTweet()
+        def badTweet = tweetBuilder.buildTweet(text: 'blacklist')
+        def tweets = [goodTweet1, badTweet]
 
         BlackList blackList = new BlackList();
-        blackList.words = ["blah", "blacklist"]
-        WhiteList whiteList = new WhiteList();
+        blackList.words = ["blacklist"]
 
-        def wrapper = [getTweets: { tweets }] as TwitterWrapper
-        TwitterClient client = new TwitterClient(twitterWrapper: wrapper, blackList: blackList, whiteList: whiteList)
+        def wrapper = getOverwrittenTwitterWrapper(tweets)
+        TwitterClient client = new TwitterClient(twitterWrapper: wrapper, blackList: blackList, whiteList: new WhiteList())
 
-        assertEquals(2, client.getTweetsForDisplay().size())
+        assertEquals(1, client.getTweetsForDisplay().size())
         assertTrue(client.getTweetsForDisplay().contains(goodTweet1))
-        assertTrue(client.getTweetsForDisplay().contains(goodTweet3))
     }
-
 }

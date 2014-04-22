@@ -5,15 +5,33 @@ class TwitterProcessor {
     private TreeSet<String> blacklistedWords = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
     private Set<String> whitelistedHandles = new HashSet<String>()
 
-    void blacklistHandle(String handle) {}
+    void blacklistHandle(String handle) {
+        if(handle) {
+            blacklistedHandles.add(handle);
+            unwhitelistHandle(handle)
+        }
+    }
+    
     void blacklistWord(String word) {
         if(word) blacklistedWords.add(word)
     }
-    void whitelistHandle(String handle) {}
+    
+    void whitelistHandle(String handle) {
+        if (handle) {
+            whitelistedHandles.add(handle)
+        }
+    }
+    
+    void unblacklistHandle(String handle) {
+        blacklistedHandles.remove(handle)
+    }
 
-    void unblacklistHandle(String handle) {}
     void unblacklistWord(String word) {}
-    void unwhitelistHandle(String handle) {}
+    void unwhitelistHandle(String handle) {
+        if (handle) {
+            whitelistedHandles.remove(handle)
+        }
+    }
 
     boolean isWordBlacklisted(String word) {
         return word ? blacklistedWords.contains(word) : false
