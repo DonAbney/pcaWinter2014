@@ -1,7 +1,7 @@
 package com.pca
 
 
-class TwitterProcessorBlacklistTest extends GroovyTestCase {
+class TwitterProcessorBlacklistWordTest extends GroovyTestCase {
 
     void testAddToListOfBlacklistedWordsAddsToWordBlacklist() {
         TwitterProcessor twitterProcessor = new TwitterProcessor()

@@ -1,6 +1,6 @@
 package com.pca
 
-class TwitterProcessorWhitelistTest extends GroovyTestCase {
+class TwitterProcessorWhitelistHandleTest extends GroovyTestCase {
 
     void testAddWhitelistHandle() {
         TwitterProcessor twitterProcessor = new TwitterProcessor()

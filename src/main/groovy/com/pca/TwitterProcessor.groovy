@@ -1,9 +1,9 @@
 package com.pca
 
 class TwitterProcessor {
-    private Set<String> blacklistedHandles = new HashSet<String>()
+    private TreeSet<String> blacklistedHandles = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
     private TreeSet<String> blacklistedWords = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
-    private Set<String> whitelistedHandles = new HashSet<String>()
+    private TreeSet<String> whitelistedHandles = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
 
     void blacklistHandle(String handle) {
         if(handle) {
@@ -27,6 +27,7 @@ class TwitterProcessor {
     }
 
     void unblacklistWord(String word) {}
+
     void unwhitelistHandle(String handle) {
         if (handle) {
             whitelistedHandles.remove(handle)
