@@ -1,44 +1,31 @@
 package com.pca
 
-import org.codehaus.groovy.runtime.typehandling.GroovyCastException
+import com.pca.test.utils.TweetBuilder
 
 class TweetTest extends GroovyTestCase {
 
-    private tweet
+    private TweetBuilder tweetBuilder
 
     void setUp() {
-        tweet = new Tweet(id: 7, handle: "jasonDuffy",
-                text: "This is what I tweeted. #PCA #YOLO",
-                hashtags: ["PCA", "YOLO"])
+        tweetBuilder = new TweetBuilder()
     }
 
     void testNewTweetIsNotNull() {
-        assertNotNull(tweet)
+        assertNotNull(new Tweet(id: 7, handle: "jasonDuffy",
+                text: "This is what I tweeted. #PCA #YOLO",
+                hashtags: ["PCA", "YOLO"]))
     }
 
     void testNewTweetHashtagsAreAListOfStrings() {
         def expected = ["PCA", "YOLO"]
         expected.eachWithIndex { hashtag, i ->
-            assertEquals(hashtag, tweet.hashtags[i])
+            assertEquals(hashtag, tweetBuilder.buildTweet(hashtags: expected).hashtags[i])
         }
     }
 
-    void testThrowsAnExceptionWhenConstructorHasTheWrongTypeForId() {
-        shouldFail(GroovyCastException.class, {
-            new Tweet(id: "five")
-        })
-    }
-
     void testCreateTweetWithMultipleHashtags() {
-        def tweet = new Tweet(id: 76, handle: "ninjaMonkey",
-                text: "MONKEY POWER!!! #ninja #monkey", hashtags: ['ninja', 'monkey'])
+        def tweet = tweetBuilder.buildTweet(hashtags: ['ninja', 'monkey'])
         assertEquals('ninja', tweet.hashtags[0])
         assertEquals('monkey', tweet.hashtags[1])
-    }
-
-    void testThrowsAnExceptionWhenHashtagIsSetWithAString() {
-        shouldFail(GroovyCastException.class, {
-            new Tweet(hashtags: "invalid")
-        })
     }
 }
