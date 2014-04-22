@@ -92,4 +92,13 @@ class TwitterProcessorWhitelistHandleTest extends GroovyTestCase {
 
         assert twitterProcessor.whitelistedHandles.size() == 1
     }
+
+    void testAddingToTheWhitelistRemovesFromTheBlacklist() {
+        TwitterProcessor twitterProcessor = new TwitterProcessor()
+        String handle = "PersonWithAFace"
+        twitterProcessor.blacklistHandle(handle)
+        twitterProcessor.whitelistHandle(handle)
+
+        assert twitterProcessor.blacklistedHandles.size() == 0
+    }
 }

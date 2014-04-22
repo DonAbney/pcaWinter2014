@@ -170,4 +170,13 @@ class TwitterProcessorBlacklistHandleTest extends GroovyTestCase{
         assert !(handle in processor.whitelistedHandles)
     }
 
+    void testUnblacklistingNullDoesNothing() {
+        TwitterProcessor processor = new TwitterProcessor()
+
+        processor.blacklistHandle("hi")
+        processor.unblacklistHandle(null)
+
+        assert processor.blacklistedHandles.size() == 1
+    }
+
 }
