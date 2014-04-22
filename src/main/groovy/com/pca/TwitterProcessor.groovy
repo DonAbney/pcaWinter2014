@@ -19,7 +19,7 @@ class TwitterProcessor {
         return word ? blacklistedWords.contains(word) : false
     }
 
-    private TreeSet<String> getBlackListedWords() {return new TreeSet<String>()}
+    private TreeSet<String> getBlackListedWords() {}
 
     private void setBlacklistedHandles(Set<String> blacklistedHandles) {}
     private void setBlacklistedWords(Set<String> blacklistedWords) {}
