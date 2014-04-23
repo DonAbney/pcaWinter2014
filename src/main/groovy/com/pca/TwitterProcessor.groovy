@@ -35,4 +35,7 @@ class TwitterProcessor {
     private void setBlacklistedWords(Set<String> blacklistedWords) {}
     private void setWhitelistedHandles(Set<String> whitelistedHandles) {}
 
+    FilteredTweets gatherFilteredTweets() {
+        new FilteredTweets()
+    }
 }
