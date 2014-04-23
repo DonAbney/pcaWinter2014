@@ -5,6 +5,16 @@ class TwitterProcessor {
     private Set<String> blacklistedHandles = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
     private Set<String> blacklistedWords   = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
     private Set<String> whitelistedHandles = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
+    private WhitelistedHandleFilter whiteListedHandleFilter;
+    FilteredTweets filteredTweets = new FilteredTweets()
+    TwitterProcessor(WhitelistedHandleFilter whitelistedHandleFilter ) {
+        this.whiteListedHandleFilter = whitelistedHandleFilter
+    }
+    void processTweets(Tweet tweet) {
+        if(whiteListedHandleFilter.isWhitelisted(tweet)) {
+            filteredTweets.whiteListedTweets.add(tweet)
+        }
+    }
 
     void blacklistHandle(String handle) {
         if(handle) {
