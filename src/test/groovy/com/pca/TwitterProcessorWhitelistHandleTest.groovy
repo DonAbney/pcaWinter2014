@@ -1,6 +1,6 @@
 package com.pca
 
-class TwitterProcessorWhitelistTest extends GroovyTestCase {
+class TwitterProcessorWhitelistHandleTest extends GroovyTestCase {
 
     void testAddWhitelistHandle() {
         TwitterProcessor twitterProcessor = new TwitterProcessor()
@@ -91,5 +91,14 @@ class TwitterProcessorWhitelistTest extends GroovyTestCase {
         twitterProcessor.unwhitelistHandle(null)
 
         assert twitterProcessor.whitelistedHandles.size() == 1
+    }
+
+    void testAddingToTheWhitelistRemovesFromTheBlacklist() {
+        TwitterProcessor twitterProcessor = new TwitterProcessor()
+        String handle = "PersonWithAFace"
+        twitterProcessor.blacklistHandle(handle)
+        twitterProcessor.whitelistHandle(handle)
+
+        assert twitterProcessor.blacklistedHandles.size() == 0
     }
 }

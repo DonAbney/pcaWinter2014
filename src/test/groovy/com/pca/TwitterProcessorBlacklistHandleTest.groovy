@@ -1,6 +1,6 @@
 package com.pca
 
-class TwitterProcessorTestHandleBlacklist extends GroovyTestCase{
+class TwitterProcessorBlacklistHandleTest extends GroovyTestCase{
 
     void testBlacklistingANullAddsNothing() {
         String handle = null
@@ -66,9 +66,9 @@ class TwitterProcessorTestHandleBlacklist extends GroovyTestCase{
         def handle = 'myHandle'
         TwitterProcessor processor = new TwitterProcessor()
         processor.blacklistHandle(handle)
-        assert true == (handle in processor.blacklistedHandles)
+        assert (handle in processor.blacklistedHandles)
         processor.unblacklistHandle(handle)
-        assert false == (handle in processor.blacklistedHandles)
+        assert !(handle in processor.blacklistedHandles)
     }
 
     void testUnblacklistingHandleYieldsCorrectNumberOfBlacklistedHandles()
@@ -99,9 +99,9 @@ class TwitterProcessorTestHandleBlacklist extends GroovyTestCase{
         TwitterProcessor processor = new TwitterProcessor()
 
         processor.blacklistHandle(upperHandle)
-        assert true == (upperHandle in processor.blacklistedHandles)
+        assert (upperHandle in processor.blacklistedHandles)
         processor.unblacklistHandle(lowerHandle)
-        assert false == (upperHandle in processor.blacklistedHandles)
+        assert !(upperHandle in processor.blacklistedHandles)
     }
 
     void testUnblacklistingAnUppercaseHandleRemovesLowercaseVersionsOfIt() {
@@ -111,9 +111,9 @@ class TwitterProcessorTestHandleBlacklist extends GroovyTestCase{
         TwitterProcessor processor = new TwitterProcessor()
 
         processor.blacklistHandle(lowerHandle)
-        assert true == (lowerHandle in processor.blacklistedHandles)
+        assert (lowerHandle in processor.blacklistedHandles)
         processor.unblacklistHandle(upperHandle)
-        assert false == (lowerHandle in processor.blacklistedHandles)
+        assert !(lowerHandle in processor.blacklistedHandles)
     }
 
     void testUnblacklistingALowercaseHandleRemovesMixedcaseVersionsOfIt() {
@@ -122,9 +122,9 @@ class TwitterProcessorTestHandleBlacklist extends GroovyTestCase{
         TwitterProcessor processor = new TwitterProcessor()
 
         processor.blacklistHandle(handle)
-        assert true == (handle in processor.blacklistedHandles)
+        assert (handle in processor.blacklistedHandles)
         processor.unblacklistHandle(lowerHandle)
-        assert false == (handle in processor.blacklistedHandles)
+        assert !(handle in processor.blacklistedHandles)
     }
 
     void testUnblacklistingAMixedcaseHandleRemovesLowercaseVersionsOfIt() {
@@ -133,9 +133,9 @@ class TwitterProcessorTestHandleBlacklist extends GroovyTestCase{
         TwitterProcessor processor = new TwitterProcessor()
 
         processor.blacklistHandle(lowerHandle)
-        assert true == (lowerHandle in processor.blacklistedHandles)
+        assert (lowerHandle in processor.blacklistedHandles)
         processor.unblacklistHandle(handle)
-        assert false == (lowerHandle in processor.blacklistedHandles)
+        assert !(lowerHandle in processor.blacklistedHandles)
 
     }
 
@@ -145,9 +145,9 @@ class TwitterProcessorTestHandleBlacklist extends GroovyTestCase{
         TwitterProcessor processor = new TwitterProcessor()
 
         processor.blacklistHandle(handle)
-        assert true == (handle in processor.blacklistedHandles)
+        assert (handle in processor.blacklistedHandles)
         processor.unblacklistHandle(upperHandle)
-        assert false == (handle in processor.blacklistedHandles)
+        assert !(handle in processor.blacklistedHandles)
     }
 
     void testUnblacklistingAMixedcaseHandleRemovesUppercaseVersionsOfIt() {
@@ -156,18 +156,27 @@ class TwitterProcessorTestHandleBlacklist extends GroovyTestCase{
         TwitterProcessor processor = new TwitterProcessor()
 
         processor.blacklistHandle(upperHandle)
-        assert true == (upperHandle in processor.blacklistedHandles)
+        assert (upperHandle in processor.blacklistedHandles)
         processor.unblacklistHandle(handle)
-        assert false == (upperHandle in processor.blacklistedHandles)
+        assert !(upperHandle in processor.blacklistedHandles)
     }
 
     void testBlacklistingAHandleUnwhitelistsIt() {
         def handle = 'aHandle'
         TwitterProcessor processor = new TwitterProcessor()
         processor.whitelistedHandles.add(handle)
-        assert true == (handle in processor.whitelistedHandles)
+        assert (handle in processor.whitelistedHandles)
         processor.blacklistHandle(handle)
-        assert false == (handle in processor.whitelistedHandles)
+        assert !(handle in processor.whitelistedHandles)
+    }
+
+    void testUnblacklistingNullDoesNothing() {
+        TwitterProcessor processor = new TwitterProcessor()
+
+        processor.blacklistHandle("hi")
+        processor.unblacklistHandle(null)
+
+        assert processor.blacklistedHandles.size() == 1
     }
 
 }
