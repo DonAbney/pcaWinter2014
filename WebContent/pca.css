@@ -9,5 +9,11 @@ h1 {
 }
 
 p {
+	display: inline-block;
+	max-width: 800px;
+	margin: 6px;
+	padding: 10px;
 	font: 25px arial,sans-serif;
+	border:2px solid black;
+	border-radius: 5px;
 }
