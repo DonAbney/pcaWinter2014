@@ -13,8 +13,9 @@ class TwitterProcessorTestGatherFilteredTweets extends GroovyTestCase {
     void testAFreshProcessorContainsNoTweets() {
         TwitterProcessor processor = new TwitterProcessor()
         FilteredTweets filteredTweets = processor.gatherFilteredTweets()
-        assert 0 == filteredTweets.blackListedTweets.size()
-        assert 0 == filteredTweets.whiteListedTweets.size()
-        assert 0 == filteredTweets.grayListedTweets.size()
+        int black = filteredTweets.blackListedTweets.size()
+        int white = filteredTweets.whiteListedTweets.size()
+        int gray = filteredTweets.grayListedTweets.size()
+        assert 0 == black + white + gray
     }
 }
