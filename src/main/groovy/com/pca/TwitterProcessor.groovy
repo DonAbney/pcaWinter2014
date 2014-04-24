@@ -19,11 +19,14 @@ class TwitterProcessor {
     void whitelistHandle(String handle) {
         if (handle) {
             whitelistedHandles.add(handle)
+            unblacklistHandle(handle)
         }
     }
     
     void unblacklistHandle(String handle) {
-        blacklistedHandles.remove(handle)
+        if (handle) {
+            blacklistedHandles.remove(handle)
+        }
     }
 
     void unblacklistWord(String word) {}
