@@ -1,5 +1,7 @@
 package com.pca
 
+import com.pca.test.utils.TweetBuilder
+
 class TwitterProcessorBlacklistHandleTest extends GroovyTestCase{
 
     void testBlacklistingANullAddsNothing() {
@@ -163,11 +165,13 @@ class TwitterProcessorBlacklistHandleTest extends GroovyTestCase{
 
     void testBlacklistingAHandleUnwhitelistsIt() {
         def handle = 'aHandle'
+        Tweet tweet = new TweetBuilder().buildTweet(handle: handle)
+
         TwitterProcessor processor = new TwitterProcessor()
-        processor.whitelistedHandles.add(handle)
-        assert (handle in processor.whitelistedHandles)
+        processor.whitelistHandle(handle)
         processor.blacklistHandle(handle)
-        assert !(handle in processor.whitelistedHandles)
+
+        assert !(processor.whitelistedHandleFilter.isWhitelisted(tweet))
     }
 
     void testUnblacklistingNullDoesNothing() {

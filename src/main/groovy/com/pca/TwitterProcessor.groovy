@@ -3,7 +3,7 @@ package com.pca
 class TwitterProcessor {
     private TreeSet<String> blacklistedHandles = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
     private TreeSet<String> blacklistedWords = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
-    private TreeSet<String> whitelistedHandles = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
+    private WhitelistedHandleFilter whitelistedHandleFilter = new WhitelistedHandleFilter();
 
     void blacklistHandle(String handle) {
         if(handle) {
@@ -17,10 +17,8 @@ class TwitterProcessor {
     }
     
     void whitelistHandle(String handle) {
-        if (handle) {
-            whitelistedHandles.add(handle)
-            unblacklistHandle(handle)
-        }
+        whitelistedHandleFilter.whitelistHandle(handle);
+        unblacklistHandle(handle);
     }
     
     void unblacklistHandle(String handle) {
@@ -32,9 +30,7 @@ class TwitterProcessor {
     void unblacklistWord(String word) {}
 
     void unwhitelistHandle(String handle) {
-        if (handle) {
-            whitelistedHandles.remove(handle)
-        }
+        whitelistedHandleFilter.unwhitelistHandle(handle)
     }
 
     boolean isWordBlacklisted(String word) {
