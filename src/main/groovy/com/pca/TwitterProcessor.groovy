@@ -5,10 +5,20 @@ class TwitterProcessor {
     private TreeSet<String> blacklistedWords = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
     private TreeSet<String> whitelistedHandles = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
 
+    Set<Tweet> greylistedTweets = new HashSet<Tweet>()
+    Set<Tweet> blacklistedTweets = new HashSet<Tweet>()
+
     void blacklistHandle(String handle) {
         if(handle) {
             blacklistedHandles.add(handle);
             unwhitelistHandle(handle)
+        }
+    }
+
+    void blacklistTweet(Tweet tweet) {
+        if(greylistedTweets.contains(tweet)) {
+            greylistedTweets.remove(tweet)
+            blacklistedTweets.add(tweet)
         }
     }
     
