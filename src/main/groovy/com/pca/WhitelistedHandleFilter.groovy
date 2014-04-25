@@ -1,7 +1,7 @@
 package com.pca
 
 class WhitelistedHandleFilter {
-    boolean isWhitelisted() {
+    boolean isWhitelisted(handle) {
         return true
     }
 }

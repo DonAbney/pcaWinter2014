@@ -5,21 +5,33 @@ class TwitterProcessor {
     private Set<String> blacklistedHandles = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
     private Set<String> blacklistedWords   = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
     private Set<String> whitelistedHandles = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
-    private WhitelistedHandleFilter whiteListedHandleFilter;
+    private BlacklistedHandleFilter blacklistedHandleFilter
+    private BlacklistedWordFilter blacklistedWordFilter
+    private WhitelistedHandleFilter whitelistedHandleFilter
     FilteredTweets filteredTweets = new FilteredTweets()
 
-    TwitterProcessor(WhitelistedHandleFilter whitelistedHandleFilter ) {
-        this.whiteListedHandleFilter = whitelistedHandleFilter
+    TwitterProcessor(WhitelistedHandleFilter whitelistedHandleFilter = null, BlacklistedHandleFilter blacklistedHandleFilter = null, BlacklistedWordFilter blacklistedWordFilter = null) {
+        this.whitelistedHandleFilter = whitelistedHandleFilter
+        this.blacklistedHandleFilter = blacklistedHandleFilter
+        this.blacklistedWordFilter   = blacklistedWordFilter
+
     }
-    void processTweets(Tweet tweet) {
-        if(whiteListedHandleFilter.isWhitelisted(tweet)) {
-            filteredTweets.whiteListedTweets.add(tweet)
-        }
+    void processTweets(List<Tweet> tweets) {
+        tweets.every( { tweet ->
+            if(whitelistedHandleFilter.isWhitelisted(tweet.getHandle())) {
+                filteredTweets.whiteListedTweets.add(tweet)
+            }
+            else if(blacklistedHandleFilter.isBlacklisted(tweet.getHandle()) || blacklistedWordFilter.isBlacklisted(tweet.getText())) {
+                filteredTweets.blackListedTweets.add(tweet)
+            } else {
+                filteredTweets.grayListedTweets.add(tweet)
+            }
+        })
     }
 
     void blacklistHandle(String handle) {
         if(handle) {
-            blacklistedHandles.add(handle);
+            blacklistedHandles.add(handle)
             unwhitelistHandle(handle)
         }
     }
