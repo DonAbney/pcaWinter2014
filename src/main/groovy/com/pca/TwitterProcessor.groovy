@@ -31,10 +31,20 @@ class TwitterProcessor {
         })
     }
 
+    Set<Tweet> greylistedTweets = new HashSet<Tweet>()
+    Set<Tweet> blacklistedTweets = new HashSet<Tweet>()
+
     void blacklistHandle(String handle) {
         if(handle) {
             blacklistedHandles.add(handle)
             unwhitelistHandle(handle)
+        }
+    }
+
+    void blacklistTweet(Tweet tweet) {
+        if(greylistedTweets.contains(tweet)) {
+            greylistedTweets.remove(tweet)
+            blacklistedTweets.add(tweet)
         }
     }
     
