@@ -112,21 +112,19 @@ class TwitterProcessorTest extends GroovyTestCase {
 
     void testTwitterProcessorMultipleTweetsMutiplePaths() {
         TweetBuilder builder = new TweetBuilder()
-        Tweet tweet1 = builder.buildTweet([id: 1])
-        Tweet tweet2 = builder.buildTweet([id: 2])
-        Tweet tweet3 = builder.buildTweet([id: 3])
-        Tweet tweet4 = builder.buildTweet([id: 4])
+        Tweet tweet1 = builder.buildTweet([handle:"WLH-True"])  // match WhitelistHandleFilter
+        Tweet tweet2 = builder.buildTweet([handle:"BLH-True"])  // match BlacklistHandleFilter
+        Tweet tweet3 = builder.buildTweet([text: "BLW-True"])   // match BlacklistWordFilter
+        Tweet tweet4 = builder.buildTweet()                     // don't match any filter
 
         List<Tweet> tweetList = [tweet1, tweet2, tweet3, tweet4]
 
-        println tweet1.id 
-
         WhitelistedHandleFilter whitelistedHandleFilter = new WhitelistedHandleFilter()
-        whitelistedHandleFilter.metaClass.isWhitelisted(Tweet) { tweet -> if(tweet.id % 4 == 0) { return true }; return false }
+        whitelistedHandleFilter.metaClass.isWhitelisted() { String handle -> if(handle.equals("WLH-True"))  return true;  else return false }
         BlacklistedHandleFilter blacklistedHandleFilter = new BlacklistedHandleFilter()
-        blacklistedHandleFilter.metaClass.isBlacklisted(Tweet) { tweet -> if(tweet.id % 3 == 0) { return true }; return false }
+        blacklistedHandleFilter.metaClass.isBlacklisted() { String handle -> if(handle.equals("BLH-True"))  return true;  else return false }
         BlacklistedWordFilter blacklistedWordFilter = new BlacklistedWordFilter()
-        blacklistedWordFilter.metaClass.isBlacklisted(Tweet) { tweet -> if(tweet.id % 2 == 0) { return true }; return false }
+        blacklistedWordFilter.metaClass.isBlacklisted() { String word -> if(word.equals("BLW-True"))  return true ; else return false }
 
         TwitterProcessor processor = new TwitterProcessor(whitelistedHandleFilter, blacklistedHandleFilter, blacklistedWordFilter)
         processor.processTweets(tweetList)

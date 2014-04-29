@@ -16,6 +16,7 @@ class TwitterProcessor {
         this.blacklistedWordFilter   = blacklistedWordFilter
 
     }
+
     void processTweets(List<Tweet> tweets) {
         tweets.every( { tweet ->
             if(whitelistedHandleFilter.isWhitelisted(tweet.getHandle())) {
@@ -23,7 +24,8 @@ class TwitterProcessor {
             }
             else if(blacklistedHandleFilter.isBlacklisted(tweet.getHandle()) || blacklistedWordFilter.isBlacklisted(tweet.getText())) {
                 filteredTweets.blackListedTweets.add(tweet)
-            } else {
+            }
+            else {
                 filteredTweets.grayListedTweets.add(tweet)
             }
         })
