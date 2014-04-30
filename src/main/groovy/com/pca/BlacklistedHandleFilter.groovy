@@ -5,8 +5,22 @@ package com.pca
  */
 class BlacklistedHandleFilter
 {
+    private TreeSet<String> blacklistedHandles = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)
+
     boolean isBlacklisted(Tweet tweet)
     {
+        blacklistedHandles.contains(tweet.handle)
+    }
 
+    void blacklistHandle(String handle) {
+        if(handle) {
+            blacklistedHandles.add(handle);
+        }
+    }
+
+    void unblacklistHandle(String handle) {
+        //if (handle) {
+            blacklistedHandles.remove(handle)
+        //}
     }
 }

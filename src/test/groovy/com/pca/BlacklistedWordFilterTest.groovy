@@ -5,7 +5,7 @@ import com.pca.test.utils.TweetBuilder
 /**
  * Created by andrew on 4/24/14.
  */
-class BlacklistWordFilterTest extends GroovyTestCase {
+class BlacklistedWordFilterTest extends GroovyTestCase {
 
 
     void testAddToListOfBlacklistedWordsAddsToWordBlacklist() {
